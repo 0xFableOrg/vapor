@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "Vapor";
+  src: url("/Vapor.ttf");
+}
+
+@font-face {
+  font-family: "Capian";
+  src: url("/Capian.ttf");
+}
