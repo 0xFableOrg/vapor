@@ -1,0 +1,11 @@
+{
+  "name": "@vapor/p2p",
+  "author": "Vapor Team",
+  "private": true,
+  "license": "BSD-3-Clause-Clear",
+  "version": "1.0.0",
+  "dependencies": {
+    "@waku/sdk": "^0.0.21",
+    "protobufjs": "^7.2.5"
+  }
+}

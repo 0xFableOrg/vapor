@@ -14,7 +14,7 @@ anvil:
 
 # Runs the webapp in dev mode.
 webdev:
-	cd packages/frontend && make dev
+	cd packages/ui && make dev
 .PHONY: webdev
 
 # Deploys to the contracts to the local node (requires anvil to be running).
@@ -25,7 +25,7 @@ deploy:
 # Performs code-quality checks.
 check:
 	cd packages/contracts && make check
-	cd packages/frontend && make check
+	cd packages/ui && make check
 .PHONY: check
 
 # ==================================================================================================

@@ -5,6 +5,7 @@
 See also the README files of the various subpackages:
 
 - [contracts](packages/contracts/README.md)
+- [ui](packages/ui/README.md)
 
 ## Installation
 
