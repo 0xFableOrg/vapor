@@ -1,0 +1,12 @@
+# IntelliJ
+/.idea
+/vapor.iml
+
+# Mac
+.DS_Store
+
+# Node.js
+node_modules/
+
+# Private
+.env
