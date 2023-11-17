@@ -1,5 +1,4 @@
 build:
-	pnpm wagmi generate
 	pnpm next build
 .PHONY: build
 

@@ -1,5 +1,6 @@
 import React, { useCallback } from "react"
 import { utils } from "ethers"
+import Image from "next/image"
 
 import { useModal } from "@contexts/modal"
 import { useStore } from "@store/store"
@@ -80,8 +81,10 @@ const WalletModal: React.FC<WalletModalProps> = () => {
                   onClick={() => handleConnectWallet(WalletType.METAMASK)}
                   className="flex items-center w-full p-3 text-base font-bold text-gray-900 rounded-lg bg-gray-50 hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white"
                 >
-                  <img
+                  <Image
                     className="h-[20px] w-[20px]"
+                    width={20}
+                    height={20}
                     src="/img/metamask.svg"
                     alt="metamask"
                   />
@@ -98,8 +101,10 @@ const WalletModal: React.FC<WalletModalProps> = () => {
                   onClick={() => handleConnectWallet(WalletType.WALLET_CONNECT)}
                   className="flex items-center w-full p-3 text-base font-bold text-gray-900 rounded-lg bg-gray-50 hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white"
                 >
-                  <img
+                  <Image
                     className="h-[20px] w-[20px]"
+                    width={20}
+                    height={20}
                     src="/img/walletconnect.svg"
                     alt="wallet connect"
                   />

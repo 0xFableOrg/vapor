@@ -20,7 +20,7 @@ const LandingSection: React.FC<LandingSectionProps> = () => {
       // prompt user to connect
       setModal(ModalEnum.WALLET_MODAL)
     }
-  }, [router])
+  }, [router, account, setModal])
 
   return (
     <div className="flex w-full h-[90vh] bg-black items-center justify-center">
