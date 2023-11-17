@@ -1,5 +1,6 @@
 {
-  "name": "ui",
+  "name": "@vapor/ui",
+  "author": "Vapor Team",
   "private": true,
   "scripts": {
     "dev": "next dev",

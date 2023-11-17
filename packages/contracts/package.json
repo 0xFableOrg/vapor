@@ -1,6 +1,7 @@
 {
   "name": "@vapor/contracts",
   "author": "Vapor Team",
+  "private": true,
   "license": "BSD-3-Clause-Clear",
   "version": "1.0.0",
   "files": [

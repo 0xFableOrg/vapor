@@ -1,6 +1,3 @@
-# nextjs-starter
+# Vapor UI
 
-step to start the nextjs server
-
-1. yarn install
-2. yarn dev
+See the [Makefile](./Makefile) for the available command to build, check code standards, etc...
