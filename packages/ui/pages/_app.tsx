@@ -20,7 +20,7 @@ const MyApp: React.FC<AppProps> = ({ Component, pageProps }) => {
         <ModalProvider>
           <WalletProvider>
             <Head>
-              <title>VAPOR</title>
+              <title>vapor</title>
               <meta
                 name="viewport"
                 content="width=device-width, initial-scale=1.0"

@@ -18,7 +18,7 @@ const LobbyChat: React.FC<LobbyChatProps> = () => {
       if (event.key == "Enter" && !event.shiftKey && message !== "") {
         event.preventDefault()
         // handleSendMessage()
-        // send message via waku
+        // @todo send message via waku
       }
     },
     [message]
@@ -32,13 +32,13 @@ const LobbyChat: React.FC<LobbyChatProps> = () => {
         backgroundPosition: "center",
       }}
     >
-      <span className="text-white font-capian text-[20px] z-10">chat</span>
-      <div className="flex flex-col rounded-xl space-y-2 bg-gray-700 bg-opacity-50 h-[65%] w-full z-10">
+      <span className="text-white font-capian text-[20px]">chat</span>
+      <div className="flex flex-col rounded-xl space-y-2 bg-gray-700 bg-opacity-50 h-[70%] w-full z-10 overflow-y-auto overflow-x-hidden overscroll-none">
         {/* Content goes here */}
       </div>
       <div className="flex w-full h-[15%] rounded-xl z-10">
         <textarea
-          placeholder={`Type your message here...`}
+          placeholder={`type your message here...`}
           className="rounded-xl w-full bg-gray-300"
           onChange={handleMessageInput}
           onKeyDown={keyPressed}

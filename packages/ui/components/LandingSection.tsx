@@ -3,6 +3,7 @@ import { useRouter } from "next/router"
 
 import { useStore } from "@store/store"
 import { ModalEnum, useModal } from "@contexts/modal"
+import TypingText from "./Layout/TypingText"
 
 interface LandingSectionProps {} // eslint-disable-line
 
@@ -23,7 +24,14 @@ const LandingSection: React.FC<LandingSectionProps> = () => {
   }, [router, account, setModal])
 
   return (
-    <div className="flex w-full h-[90vh] bg-black items-center justify-center">
+    <div className="flex flex-col w-full h-[90vh] bg-black items-center justify-center space-y-10">
+      <TypingText
+        text={`Viirtual Arena for Peer-to-Peer Online Rendezvous`}
+        speed={100}
+      />
+      {/* <span className="text-white text-[35px] font-capian">
+        Dive into the Dispersed Dominion: A Hub for Digital Duelists
+      </span> */}
       <button
         onClick={handleEntryClick}
         type="button"
