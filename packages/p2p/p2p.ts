@@ -6,10 +6,14 @@ import {
   waitForRemotePeer,
   createDecoder,
   createEncoder,
-  createRelayNode, RelayNode, Waku, Decoder, IRelay, Encoder
+  createRelayNode, RelayNode, Waku, Decoder, IRelay, Encoder, utf8ToBytes
 } from "@waku/sdk"
 
+import { ethers, Wallet } from "ethers"
+
 import protobuf, { Reader } from "protobufjs"
+
+export { utf8ToBytes } from "@waku/sdk"
 
 // =================================================================================================
 
@@ -33,7 +37,7 @@ import protobuf, { Reader } from "protobufjs"
 type EncodedPayload = Reader | Uint8Array
 
 /** Waku node that has a relay component. */
-type WakuNode = RelayNode & { relay: IRelay }
+export type WakuNode = RelayNode & { relay: IRelay }
 
 // =================================================================================================
 
@@ -45,28 +49,88 @@ const systemTopic = "/vapor/1/system/proto"
 const systemEncoder = createEncoder({ contentTopic: systemTopic })
 const systemDecoder = createDecoder(systemTopic)
 
+export enum SystemMessageType {
+  JoinGame = 1,
+  ChangePlayerSettings = 2,
+  ChangeGameSettings = 3,
+  LockGameSettings = 4,
+  MarkPlayerReady = 5,
+  LeaveRoom = 6
+}
+
 const SystemMessage = new protobuf.Type("SystemMessage")
-  .add(new protobuf.Field("timestamp", 1, "uint64"))
-  .add(new protobuf.Field("sender", 2, "string"))
-  .add(new protobuf.Field("type", 3, "uint32"))
-  .add(new protobuf.Field("args", 4, "bytes"))
-  .add(new protobuf.Field("signature", 5, "bytes"))
+  .add(new protobuf.OneOf("type", {
+    joinGame: SystemMessageType.JoinGame,
+    changePlayerSettings: SystemMessageType.ChangePlayerSettings,
+    changeGameSettings: SystemMessageType.ChangeGameSettings,
+    lockGameSettings: SystemMessageType.LockGameSettings,
+    markPlayerReady: SystemMessageType.MarkPlayerReady,
+    leaveRoom:  SystemMessageType.LeaveRoom
+  }))
+  .add(new protobuf.Field("signature", 1, "string"))
+  .add(new protobuf.Field("payload", 2, "bytes"))
 
 type SystemMessage = protobuf.Message<{
-  timestamp: number
-  sender: string
   type: number
-  args: Uint8Array
-  signature: Uint8Array
+  signature: string
+  payload: Uint8Array
 }>
 
-export async function subscribeToSystem(node: WakuNode, msgCallback: (msg: SystemMessage) => void) {
+const SettingsMessage = new protobuf.Type("ChangePlayerSettings")
+  .add(new protobuf.Field("settingsNames", 1, "string", "repeated"))
+  .add(new protobuf.Field("settingsValues", 2, "bytes", "repeated"))
+
+export type Address = `0x${string}`
+
+type SystemMessageInputs = {
+  type: number
+  settingsNames: string[]
+  settingsValues: Uint8Array[]
+  privateKey: Address
+}
+
+type DecodedSystemMessage = {
+  type: number,
+  address: string,
+  payload: {
+    settingsNames: string[]
+    settingsValues: Uint8Array[]
+  }
+}
+
+export async function subscribeToSystem(node: WakuNode, msgCallback: (msg: DecodedSystemMessage) => void) {
   return subscribeToTopic(node, systemDecoder, (payload: EncodedPayload) => {
-    msgCallback(SystemMessage.decode(payload))
+    const systemMessage: any = SystemMessage.decode(payload)
+    // TODO does this work?
+    const settingsMessage: any = SettingsMessage.decode((systemMessage as any).payload)
+    const address = ethers.verifyMessage(systemMessage.payload, systemMessage.signature)
+    const decodedMessage: DecodedSystemMessage = {
+      type: systemMessage.type,
+      address,
+      payload: {
+        settingsNames: settingsMessage.settingsNames,
+        settingsValues: settingsMessage.settingsValues
+      }
+    }
+    msgCallback(decodedMessage)
   })
 }
 
-export async function sendSystemMessage(node: WakuNode, payload: SystemMessage) {
+export async function sendSystemMessage(node: WakuNode, inputs: SystemMessageInputs) {
+  const settingsMessage = SettingsMessage.create({
+    settingsNames: inputs.settingsNames,
+    settingsValues: inputs.settingsValues
+  })
+
+  const settingsPayload = SettingsMessage.encode(settingsMessage).finish()
+  const wallet = new Wallet(inputs.privateKey)
+
+  const payload: SystemMessage = SystemMessage.create({
+    type: inputs.type,
+    signature: await wallet.signMessage(settingsPayload),
+    payload: settingsPayload
+  })
+
   await sendMessage(node, systemEncoder, SystemMessage, payload)
 }
 
@@ -120,7 +184,7 @@ export async function subscribeToTopic(node: Waku & { relay: IRelay }, decoder: 
 /**
  * Example function for the waku setup that subscribes to the system topic.
  */
-export async function setupWaku(signalStatus: (status: string) => void, msgCallback: (msg: SystemMessage) => void) {
+export async function setupWaku(signalStatus: (status: string) => void, msgCallback: (msg: DecodedSystemMessage) => void) {
 
   const node = await startWakuNode()
   await subscribeToSystem(node, msgCallback)
@@ -141,7 +205,7 @@ export async function setupWaku(signalStatus: (status: string) => void, msgCallb
 
 // =================================================================================================
 
-export async function shutdownWaku(node: WakuNode, decoders: Decoder[]) {
+export async function shutdownWaku(node: WakuNode) {
   // // For light node
   // await subscription.unsubscribe([systemTopic])
 
