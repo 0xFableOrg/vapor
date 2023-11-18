@@ -10,28 +10,32 @@ import { StoreProvider } from "@store/store"
 
 import "@styles/globals.css"
 import "react-toastify/dist/ReactToastify.css"
+import { lightTheme } from "@ensdomains/thorin"
+import { ThemeProvider } from "styled-components"
 
 const MyApp: React.FC<AppProps> = ({ Component, pageProps }) => {
   return (
     <StoreProvider>
-      <ModalProvider>
-        <WalletProvider>
-          <Head>
-            <title>VAPOR</title>
-            <meta
-              name="viewport"
-              content="width=device-width, initial-scale=1.0"
+      <ThemeProvider theme={lightTheme}>
+        <ModalProvider>
+          <WalletProvider>
+            <Head>
+              <title>VAPOR</title>
+              <meta
+                name="viewport"
+                content="width=device-width, initial-scale=1.0"
+              />
+              <meta property="og:description" content="matching" />
+            </Head>
+            <Script
+              src="https://unpkg.com/flowbite@1.3.3/dist/flowbite.js"
+              strategy="beforeInteractive"
             />
-            <meta property="og:description" content="matching" />
-          </Head>
-          <Script
-            src="https://unpkg.com/flowbite@1.3.3/dist/flowbite.js"
-            strategy="beforeInteractive"
-          />
-          <Component {...pageProps} />
-          <ToastContainer position={toast.POSITION.BOTTOM_LEFT} />
-        </WalletProvider>
-      </ModalProvider>
+            <Component {...pageProps} />
+            <ToastContainer position={toast.POSITION.BOTTOM_LEFT} />
+          </WalletProvider>
+        </ModalProvider>
+      </ThemeProvider>
     </StoreProvider>
   )
 }
