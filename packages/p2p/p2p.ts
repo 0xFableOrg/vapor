@@ -6,10 +6,10 @@ import {
   waitForRemotePeer,
   createDecoder,
   createEncoder,
-  createRelayNode,
+  createRelayNode, RelayNode, Waku, Decoder, IRelay, Encoder
 } from "@waku/sdk"
 
-import protobuf from "protobufjs"
+import protobuf, { Reader } from "protobufjs"
 
 // =================================================================================================
 
@@ -19,7 +19,6 @@ import protobuf from "protobufjs"
 
 // =================================================================================================
 
-// Codecs: `proto` for protobuf, `utf-8` for simple utf-8 strings.
 // const chatTopic = "/vapor/1/chat/proto"
 
 // // Create a message structure using Protobuf
@@ -27,6 +26,14 @@ import protobuf from "protobufjs"
 //   .add(new protobuf.Field("timestamp", 1, "uint64"))
 //   .add(new protobuf.Field("sender", 2, "string"))
 //   .add(new protobuf.Field("message", 3, "string"))
+
+// =================================================================================================
+
+/** Type of encoded payloads received from the Waku network. */
+type EncodedPayload = Reader | Uint8Array
+
+/** Waku node that has a relay component. */
+type WakuNode = RelayNode & { relay: IRelay }
 
 // =================================================================================================
 
@@ -45,13 +52,21 @@ const SystemMessage = new protobuf.Type("SystemMessage")
   .add(new protobuf.Field("args", 4, "bytes"))
   .add(new protobuf.Field("signature", 5, "bytes"))
 
-export async function subscribeToSystem(node, msgCallback) {
-  return subscribeToTopic(node, systemDecoder, (payload) => {
+type SystemMessage = protobuf.Message<{
+  timestamp: number
+  sender: string
+  type: number
+  args: Uint8Array
+  signature: Uint8Array
+}>
+
+export async function subscribeToSystem(node: WakuNode, msgCallback: (msg: SystemMessage) => void) {
+  return subscribeToTopic(node, systemDecoder, (payload: EncodedPayload) => {
     msgCallback(SystemMessage.decode(payload))
   })
 }
 
-export async function sendSystemMessage(node, payload) {
+export async function sendSystemMessage(node: WakuNode, payload: SystemMessage) {
   await sendMessage(node, systemEncoder, SystemMessage, payload)
 }
 
@@ -80,7 +95,7 @@ export async function startWakuNode() {
   await node.start()
 
   // For debugging
-  window.waku = node
+  ;(window as any).waku = node
 
   return node
 }
@@ -91,7 +106,7 @@ export async function startWakuNode() {
  * Subscribe the node to the given topic, calling `msgCallback` with the message payload if it
  * exists. Returns an unsubscribe function.
  */
-export async function subscribeToTopic(node, decoder, payloadCallback) {
+export async function subscribeToTopic(node: Waku & { relay: IRelay }, decoder: Decoder, payloadCallback: (payload: EncodedPayload) => void) {
   return node.relay.subscribe(decoder, (message) => {
     // Checks there is a payload on the message.
     // Waku Message is encoded in protobuf, in proto v3 fields are always optional.
@@ -105,7 +120,7 @@ export async function subscribeToTopic(node, decoder, payloadCallback) {
 /**
  * Example function for the waku setup that subscribes to the system topic.
  */
-export async function setupWaku(signalStatus, msgCallback) {
+export async function setupWaku(signalStatus: (status: string) => void, msgCallback: (msg: SystemMessage) => void) {
 
   const node = await startWakuNode()
   await subscribeToSystem(node, msgCallback)
@@ -126,15 +141,12 @@ export async function setupWaku(signalStatus, msgCallback) {
 
 // =================================================================================================
 
-export async function shutdownWaku(node) {
+export async function shutdownWaku(node: WakuNode, decoders: Decoder[]) {
   // // For light node
   // await subscription.unsubscribe([systemTopic])
-  // node.relay.unsubscribe([systemTopic])
 
-  // Should work for both relay and light nodes (but verify for light node)
-  for (const subscription of node.relay.toSubscriptionIterator()) {
-    await subscription.unsubscribe([systemTopic])
-  }
+  // TODO need to unsubscribe
+
   await node.stop()
 }
 
@@ -148,7 +160,7 @@ export async function shutdownWaku(node) {
 //   message: "Hello, World!",
 // }
 
-export async function sendMessage(node, encoder, msgType, msgPayload) {
+export async function sendMessage(node: WakuNode, encoder: Encoder, msgType: protobuf.Type, msgPayload: any) {
   const protoMessage = msgType.create(msgPayload)
   const serialisedMessage = msgType.encode(protoMessage).finish()
   await node.relay.send(encoder, { payload: serialisedMessage })
