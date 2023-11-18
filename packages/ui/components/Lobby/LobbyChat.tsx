@@ -1,8 +1,28 @@
-import React from "react"
+import React, { useCallback, useRef, useState } from "react"
+import useAutosizeTextArea from "@hooks/useAutosizeTextArea"
 
 interface LobbyChatProps {}
 
 const LobbyChat: React.FC<LobbyChatProps> = () => {
+  const [message, setMessage] = useState<string>("")
+
+  const textAreaRef = useRef<HTMLTextAreaElement>(null)
+  useAutosizeTextArea(textAreaRef.current, message)
+
+  const handleMessageInput = useCallback((e: any) => {
+    setMessage(e.target.value)
+  }, [])
+
+  const keyPressed = useCallback(
+    async (event) => {
+      if (event.key == "Enter" && !event.shiftKey && message !== "") {
+        event.preventDefault()
+        // handleSendMessage()
+        // send message via waku
+      }
+    },
+    [message]
+  )
   return (
     <div
       className="flex flex-col items-start justify-start p-4 w-[50%] h-full border-[1px] border-white rounded-xl space-y-3 relative"
@@ -20,6 +40,9 @@ const LobbyChat: React.FC<LobbyChatProps> = () => {
         <textarea
           placeholder={`Type your message here...`}
           className="rounded-xl w-full bg-gray-300"
+          onChange={handleMessageInput}
+          onKeyDown={keyPressed}
+          ref={textAreaRef}
         />
       </div>
     </div>
