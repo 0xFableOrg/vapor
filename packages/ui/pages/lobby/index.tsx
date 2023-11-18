@@ -11,8 +11,9 @@ const Lobby: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen w-screen bg-black p-6 space-y-3">
-      <h1 className="font-vapor text-white text-[30px]">VAPOR</h1>
+      <h1 className="font-vapor text-white text-[30px]">vapor</h1>
       {lobbyIds.map((id) => (
+        // eslint-disable-next-line @next/next/link-passhref
         <Link key={id} href={`/lobby/${id}`}>
           <span className="text-white text-[20px] font-capian">
             <a style={{ margin: "10px", display: "block" }}>Lobby {id}</a>

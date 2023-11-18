@@ -1,6 +1,8 @@
 import { DefaultTheme } from "@ensdomains/thorin"
 import styled, { css } from "styled-components"
 
+// using thorin to display addresses
+
 type ContainerProps = {
   $gap?: keyof DefaultTheme["space"]
   $variant?:
