@@ -7,3 +7,18 @@ export enum LobbyButtonType {
   START,
   QUIT,
 }
+
+export enum GameStatus {
+  Created,
+  Started,
+  Completed,
+}
+
+export type GameSession = {
+  gameID: string;
+  sessionID: string;
+  joinableIndex: number;
+  name: string;
+  creator: string;
+  status: GameStatus;
+};
