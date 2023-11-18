@@ -63,13 +63,12 @@ const ConnectButton: React.FC<ConnectButtonProps> = () => {
   return (
     <Container as="main" $variant="flexVerticalCenter">
       {!connected && (
-        <StyledButton onClick={handleConnect}>{"connect"}</StyledButton>
+        <StyledButton onClick={handleConnect} className="font-vapor">
+          {"connect"}
+        </StyledButton>
       )}
       {connected && (
-        <Profile
-          address={account as string}
-          ensName={ens || undefined}
-        />
+        <Profile address={account as string} ensName={ens || undefined} />
       )}
     </Container>
   )
