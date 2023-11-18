@@ -1,27 +1,41 @@
-import { BigNumber, ethers } from "ethers";
+import { BigNumber, BytesLike, Signer, ethers } from "ethers";
 import { Vapor as VaporContract, Vapor__factory } from "./contract_types";
 
 interface IVapor {
-  createNewGame(): BigNumber;
-  createLobby(gameId: BigNumber): BigNumber;
-  startGame(): void;
-  endGame(): void;
+  createNewGame(config: VaporContract.GameConfigStruct): Promise<BigNumber>;
+  createLobby(
+    gameId: BigNumber,
+    name: string,
+    initialSettings: BytesLike,
+    conditionalCallback: () => void // , listener callback
+  ): Promise<BigNumber>;
+  startGame(
+    sessionID: BigNumber,
+    players: string[],
+    startSettings: BytesLike,
+    playerSettings: BytesLike[],
+    startGameCallBack: () => void
+  ): Promise<void>;
+  endGame(sessionId: BigNumber): Promise<void>;
   joinLobby(gameId: BigNumber, sessionId: BigNumber): void;
-  listGames(skip: number, take: number): void;
-  listAllActiveLobbies(gameId: BigNumber): void;
+  listGames(
+    skip: number,
+    take: number
+  ): Promise<VaporContract.GameConfigStruct[]>;
+  listAllActiveLobbies(
+    gameId: BigNumber
+  ): Promise<VaporContract.SessionStructOutput[]>;
 }
 
 export class Vapor implements IVapor {
-  private readonly provider;
   private readonly VaporContract: VaporContract;
   constructor(
     private readonly vaporContract: string,
-    private readonly rpcUrl: string
+    private readonly signer: Signer
   ) {
-    this.provider = new ethers.providers.JsonRpcProvider(rpcUrl);
     this.VaporContract = Vapor__factory.connect(
       this.vaporContract,
-      this.provider
+      this.signer
     );
   }
 
@@ -48,23 +62,69 @@ export class Vapor implements IVapor {
     }
     return sessions;
   }
-  createNewGame(): BigNumber {
-    throw new Error("Method not implemented.");
+
+  async createNewGame(
+    config: VaporContract.GameConfigStruct
+  ): Promise<BigNumber> {
+    const tx = await this.VaporContract.registerGame(config);
+    const receipt = await tx.wait();
+
+    const data = receipt.events![0].data;
+    const result = this.VaporContract.interface.decodeEventLog(
+      "GameRegistered",
+      data
+    );
+    return BigNumber.from(result[0]);
   }
-  createLobby(
-    gameId: BigNumber // , listener callback
-  ): BigNumber {
-    // create game session will create a runnign listener
-    // that will actively listen to new players wanting to join this lobby
-    throw new Error("Method not implemented.");
+
+  async createLobby(
+    gameId: BigNumber,
+    name: string,
+    initialSettings: BytesLike,
+    conditionalCallback: () => void // , listener callback
+  ): Promise<BigNumber> {
+    const tx = await this.VaporContract.createSession(
+      gameId,
+      name,
+      initialSettings
+    );
+    const receipt = await tx.wait();
+
+    const data = receipt.events![0].data;
+    const result = this.VaporContract.interface.decodeEventLog(
+      "GameCreated",
+      data
+    );
+
+    conditionalCallback();
+    const sessionId = BigNumber.from(result[1]);
+    return sessionId;
   }
+
   joinLobby(gameId: BigNumber, sessionId: BigNumber): void {
     throw new Error("Method not implemented.");
   }
-  startGame(): void {
-    throw new Error("Method not implemented.");
+
+  async startGame(
+    sessionID: BigNumber,
+    players: string[],
+    startSettings: BytesLike,
+    playerSettings: BytesLike[],
+    startGameCallBack: () => void
+  ): Promise<void> {
+    const tx = await this.VaporContract.startSession(
+      sessionID,
+      players,
+      startSettings,
+      playerSettings
+    );
+
+    const receipt = await tx.wait();
+
+    startGameCallBack();
   }
-  endGame(): void {
-    throw new Error("Method not implemented.");
+  
+  async endGame(sessionId: BigNumber): Promise<void> {
+    await this.VaporContract.completeSession(sessionId);
   }
 }
