@@ -10,11 +10,13 @@ const Lobby: React.FC = () => {
   const lobbyIds = [1, 2, 3, 4, 5]
 
   return (
-    <div>
-      <h1>Select a Lobby</h1>
+    <div className="flex flex-col h-screen w-screen bg-black p-6 space-y-3">
+      <h1 className="font-vapor text-white text-[30px]">VAPOR</h1>
       {lobbyIds.map((id) => (
         <Link key={id} href={`/lobby/${id}`}>
-          <a style={{ margin: "10px", display: "block" }}>Lobby {id}</a>
+          <span className="text-white text-[20px] font-capian">
+            <a style={{ margin: "10px", display: "block" }}>Lobby {id}</a>
+          </span>
         </Link>
       ))}
     </div>
