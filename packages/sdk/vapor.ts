@@ -123,6 +123,7 @@ export class Vapor implements IVapor {
 
     startGameCallBack();
   }
+  
   async endGame(sessionId: BigNumber): Promise<void> {
     await this.VaporContract.completeSession(sessionId);
   }
