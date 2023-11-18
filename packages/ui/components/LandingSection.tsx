@@ -27,7 +27,12 @@ const LandingSection: React.FC<LandingSectionProps> = () => {
       <button
         onClick={handleEntryClick}
         type="button"
-        className="flex flex-row items-center font-capian text-[20px] justify-center px-10 py-10 font-medium text-center text-white border border-transparent select-none rounded-full shadow-sm bg-primary bg-[#405ca9] hover:bg-[#1b2646]"
+        className="flex flex-row items-center font-capian text-[20px] justify-center px-20 py-10 font-medium text-center text-white border-[1px] border-white select-none rounded-full shadow-sm"
+        style={{
+          backgroundImage: "url(/img/landingPageButton.jpeg)",
+          backgroundPosition: "center",
+          backgroundSize: "cover",
+        }}
       >
         enter
       </button>

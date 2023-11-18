@@ -21,7 +21,7 @@ const LobbyActionButton: React.FC<LobbyActionButtonProps> = ({ type }) => {
   // @todo on-click function to join game (sdk)
   return (
     <button
-      className="flex items-center justify-center p-8 w-1/3 border border-white"
+      className="flex items-center justify-center p-8 w-full h-[50%] rounded-xl border border-white"
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={buttonStyle}

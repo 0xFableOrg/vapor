@@ -6,6 +6,7 @@ import LobbyActionButton from "@components/Button/LobbyActionButton"
 import { LobbyButtonType } from "@type/common"
 import SessionPlayer from "@components/Lobby/SessionPlayer"
 import SelectedLobbyConfig from "@components/Lobby/SelectedLobbyConfig"
+import LobbyChat from "@components/Lobby/LobbyChat"
 
 const LobbyIdPage: NextPage = () => {
   const router = useRouter()
@@ -29,10 +30,10 @@ const LobbyIdPage: NextPage = () => {
 
   return (
     <div className="flex flex-col h-screen w-screen bg-black p-6 space-y-3">
-      <h1 className="font-capian text-white text-[30px]">Lobby {id}</h1>
-      <div className="flex flex-row w-full h-[60%] space-x-4">
+      <h1 className="font-capian text-white text-[22px]">Lobby {id}</h1>
+      <div className="flex flex-row w-full h-[50%] space-x-4">
         <div className="flex flex-col items-start justify-start p-4 w-[50%] h-full border-[1px] border-white rounded-xl space-y-3">
-          <span className="text-white font-capian text-[20px]">Players</span>
+          <span className="text-white font-capian text-[20px]">players</span>
 
           {/* @todo get players from contract, iterate through them */}
           <SessionPlayer
@@ -41,9 +42,12 @@ const LobbyIdPage: NextPage = () => {
         </div>
         <SelectedLobbyConfig />
       </div>
-      <div className="flex flex-row w-full h-[20%] space-x-4 items-center justify-center spacex-4">
-        <LobbyActionButton type={LobbyButtonType.START} />
-        <LobbyActionButton type={LobbyButtonType.QUIT} />
+      <div className="flex flex-row w-full h-[50%] space-x-4">
+        <LobbyChat />
+        <div className="flex flex-col items-center justify-center w-[50%] h-full rounded-xl space-y-3">
+          <LobbyActionButton type={LobbyButtonType.START} />
+          <LobbyActionButton type={LobbyButtonType.QUIT} />
+        </div>
       </div>
     </div>
   )
