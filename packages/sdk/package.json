@@ -5,13 +5,18 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "tsc": "tsc",
-    "build": "tsc"
+    "build": "tsc",
+    "generate:contract-type": "typechain --target ethers-v5 --out-dir ./contract_types '../contracts/out/**/*.json'"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@typechain/ethers-v5": "^11.1.2",
+    "typechain": "^8.3.2",
     "typescript": "4.5.5"
+  },
+  "dependencies": {
+    "ethers": "5.7.2"
   }
 }
