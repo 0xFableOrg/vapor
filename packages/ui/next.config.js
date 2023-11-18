@@ -3,7 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
   publicRuntimeConfig: {},
   serverRuntimeConfig: {},
-  transpilePackages: ['@vapor/p2p'],
+  transpilePackages: ['@vapor/p2p', '@vapor/sdk'],
 };
 
 module.exports = nextConfig;

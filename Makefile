@@ -7,6 +7,13 @@ setup: install-frozen
 	cd packages/contracts && make setup
 .PHONY: setup
 
+# Build contracts & frontend
+build:
+	cd packages/contracts && make build
+	cd packages/sdk && pnpm run generate:contract-type
+	cd packages/ui && make build
+.PHONY: build
+
 # Runs anvil (local EVM node).
 anvil:
 	cd packages/contracts && make anvil
@@ -14,6 +21,7 @@ anvil:
 
 # Runs the webapp in dev mode.
 webdev:
+	cd packages/sdk && pnpm run generate:contract-type
 	cd packages/ui && make dev
 .PHONY: webdev
 

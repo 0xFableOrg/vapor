@@ -4,7 +4,6 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "generate:contract-type": "typechain --target ethers-v5 --out-dir ./contract_types '../contracts/out/**/*.json'"
   },
