@@ -32,7 +32,7 @@ On this page, the players that have joined are listed (addresses, or ENS if avai
 Thorin here for the bounty), alongside with their per-player settings.
 
 The page should also display "global start settings" which are decided by the game creator (possibly
-in conceration with the players).
+in coordination with the players).
 
 We can get inspiration from this screenshot:
 
