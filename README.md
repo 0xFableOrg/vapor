@@ -2,6 +2,8 @@
 
 *Virtual Arena for Peer-to-Peer Online Rendezvous*
 
+> Web2 has Steam, Web3 has VAPOR.
+
 See also the README files of the various subpackages:
 
 - [contracts](packages/contracts/README.md)

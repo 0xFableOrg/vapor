@@ -2,12 +2,14 @@
 pragma solidity ^0.8.0;
 
 import {Script, console2} from "forge-std/Script.sol";
+import {Vapor} from "../Vapor.sol";
+
 // import {Multicall3} from "multicall/Multicall3.sol";
 
 contract Deploy is Script {
     bytes32 private constant salt = bytes32(uint256(4269));
 
-    MyContract public myContract;
+    Vapor public vapor;
 
     bool private doLog = true;
 
@@ -25,12 +27,9 @@ contract Deploy is Script {
         vm.startBroadcast();
 
         // deploy
-        myContract = new MyContract();
+        vapor = new Vapor();
 
-        // initialize
-        myContract.initialize();
-
-        log("MyContract address", address(myContract));
+        log("Vapor address", address(vapor));
 
         vm.stopBroadcast();
 

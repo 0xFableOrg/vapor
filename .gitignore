@@ -10,3 +10,7 @@ node_modules/
 
 # Private
 .env
+
+# Contracts
+/packages/contracts/cache
+/packages/contracts/out
