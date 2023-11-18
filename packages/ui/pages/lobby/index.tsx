@@ -1,5 +1,6 @@
-import Link from "next/link"
-import React from "react"
+import LobbyListActionButton from "@components/Button/LobbyListActionButton'";
+import LobbyItem from "@components/Lobby/LobbyItem";
+import React from "react";
 
 const Lobby: React.FC = () => {
   // get lobby IDs from getJoinableSessions function in the contract
@@ -7,21 +8,25 @@ const Lobby: React.FC = () => {
   // store all sessions data in redux?
 
   // Example lobby IDs
-  const lobbyIds = [1, 2, 3, 4, 5]
+  const lobbyIds = [1, 2, 3, 4, 5];
 
   return (
     <div className="flex flex-col h-screen w-screen bg-black p-6 space-y-3">
-      <h1 className="font-vapor text-white text-[30px]">vapor</h1>
-      {lobbyIds.map((id) => (
-        // eslint-disable-next-line @next/next/link-passhref
-        <Link key={id} href={`/lobby/${id}`}>
-          <span className="text-white text-[20px] font-capian">
-            <a style={{ margin: "10px", display: "block" }}>Lobby {id}</a>
+      <h1 className="font-vapor text-white text-[30px]">VAPOR</h1>
+      <main className="flex flex-col w-full h-full max-w-7xl mx-auto">
+        <div className="flex flex-row-reverse">
+          <span>
+            <LobbyListActionButton onClick={() => {}} />
           </span>
-        </Link>
-      ))}
+        </div>
+        <div className="flex flex-col items-start justify-start w-full h-full p-8 mt-4 border-[1px] border-white rounded-xl space-y-3 overflow-auto">
+          {lobbyIds.map((id) => (
+            <LobbyItem id={id} key={id} />
+          ))}
+        </div>
+      </main>
     </div>
-  )
-}
+  );
+};
 
-export default Lobby
+export default Lobby;
