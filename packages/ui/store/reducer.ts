@@ -32,9 +32,13 @@ const reducer = (state: StoreState, action: StoreActions) => {
         ...state,
         wakuNode: action.payload.wakuNode,
       }
+    case StoreActionTypes.SET_ALL_ROOMS:
+      return {
+        ...state,
+        rooms: action.payload.rooms,
+      }
     case StoreActionTypes.ADD_ROOM:
       return { ...state, rooms: [...(state.rooms || []), action.payload.room] }
-
     case StoreActionTypes.SET_ROOM:
       return {
         ...state,
@@ -44,7 +48,6 @@ const reducer = (state: StoreState, action: StoreActions) => {
             : room
         ),
       }
-
     case StoreActionTypes.REMOVE_ROOM:
       return {
         ...state,

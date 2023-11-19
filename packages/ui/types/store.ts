@@ -20,6 +20,7 @@ export enum StoreActionTypes {
   SET_BALANCE = "SET_BALANCE",
   SET_CHAIN_ID = "SET_CHAIN_ID",
   SET_WAKU_NODE = "SET_WAKU_NODE",
+  SET_ALL_ROOMS = 'SET_ALL_ROOMS',
   ADD_ROOM = "ADD_ROOM",
   SET_ROOM = "SET_ROOM",
   REMOVE_ROOM = "REMOVE_ROOM",
@@ -53,6 +54,9 @@ type StorePayload = {
   }
   [StoreActionTypes.ADD_ROOM]: {
     room: GameSession
+  }
+  [StoreActionTypes.SET_ALL_ROOMS]: {
+    rooms: GameSession[]
   }
   [StoreActionTypes.SET_ROOM]: {
     room: GameSession
