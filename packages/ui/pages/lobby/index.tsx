@@ -1,9 +1,12 @@
 import LobbyListActionButton from "@components/Button/LobbyListActionButton";
 import LobbyItem from "@components/Lobby/LobbyItem";
 import { ModalEnum, useModal } from "@contexts/modal";
-import { GameSession, GameStatus } from "@type/common";
+import { useVapor } from "@hooks/useVapor";
+import { useWakuNode } from "@hooks/useWakuNode";
+import { GameSession } from "@type/common";
+import { Vapor } from "@vapor/sdk/contract_types";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 const Lobby: React.FC = () => {
   // get lobby IDs from getJoinableSessions function in the contract
@@ -11,42 +14,26 @@ const Lobby: React.FC = () => {
   // store all sessions data in redux?
   const router = useRouter();
   const { setModal } = useModal();
+  const { isReady, vapor } = useVapor("");
+  const [lobbiesArray, setLobbiesArray] = useState<Vapor.SessionStructOutput[]>(
+    []
+  );
 
-  // Example lobby IDs
-  const lobbyItems: Array<GameSession> = [
-    {
-      creator: "0x123123123",
-      gameID: "5",
-      joinableIndex: 4,
-      name: "Started Game",
-      sessionID: "123",
-      status: GameStatus.Started,
-    },
-    {
-      creator: "0x123123124",
-      gameID: "6",
-      joinableIndex: 3,
-      name: "Created Game",
-      sessionID: "155",
-      status: GameStatus.Created,
-    },
-    {
-      creator: "0x123123124",
-      gameID: "6",
-      joinableIndex: 0,
-      name: "Created Game Not Joinable",
-      sessionID: "156",
-      status: GameStatus.Created,
-    },
-    {
-      creator: "0x123123125",
-      gameID: "5",
-      joinableIndex: 3,
-      name: "Completed Game",
-      sessionID: "157",
-      status: GameStatus.Completed,
-    },
-  ];
+  useEffect(() => {
+    const asyncFn = async () => {
+      const lobbies = await vapor!.listAllActiveLobbies();
+      setLobbiesArray(lobbies);
+    };
+    if (isReady && vapor) {
+      asyncFn();
+    }
+  }, [isReady, vapor]);
+
+  const onJoinClicked = (item: Vapor.SessionStructOutput) => async () => {
+    // const result = await vapor?.joinLobby(wakuNode, item.gameID, item.sessionID);
+    // Set loading messages here
+    router.push(`/lobby/${item.sessionID.toString()}`);
+  };
 
   return (
     <div className="flex flex-col h-screen w-screen bg-black p-6 space-y-3">
@@ -62,20 +49,18 @@ const Lobby: React.FC = () => {
           </span>
         </div>
         <div className="flex flex-col w-full max-w-7xl mx-auto items-start justify-start p-8 mt-4 border-[1px] border-white rounded-xl space-y-3 overflow-auto">
-          {lobbyItems.map((item) => (
+          {lobbiesArray.map((item) => (
             <LobbyItem
               creator={item.creator}
               currentSize={4}
               maxSize={5}
-              gameId={item.gameID}
-              isJoinable={item.joinableIndex !== 0}
+              gameId={item.gameID.toString()}
+              isJoinable={item.joinableIndex.toNumber() !== 0}
               name={item.name}
-              sessionId={item.sessionID}
+              sessionId={item.sessionID.toString()}
               status={item.status}
-              key={item.sessionID}
-              onJoinClicked={() => {
-                router.push(`/lobby/${item.sessionID}`);
-              }}
+              key={item.sessionID.toString()}
+              onJoinClicked={onJoinClicked(item)}
             />
           ))}
         </div>

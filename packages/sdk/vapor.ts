@@ -1,5 +1,6 @@
 import { BigNumber, BytesLike, Signer, ethers } from "ethers";
 import { Vapor as VaporContract, Vapor__factory } from "./contract_types";
+import { WakuNode } from "@vapor/p2p"
 
 interface IVapor {
   createNewGame(config: VaporContract.GameConfigStruct): Promise<BigNumber>;
@@ -17,7 +18,7 @@ interface IVapor {
     startGameCallBack: () => void
   ): Promise<void>;
   endGame(sessionId: BigNumber): Promise<void>;
-  joinLobby(gameId: BigNumber, sessionId: BigNumber): void;
+  joinLobby(wakuNode: WakuNode, gameId: BigNumber, sessionId: BigNumber): void;
   listGames(
     skip: number,
     take: number
@@ -101,7 +102,8 @@ export class Vapor implements IVapor {
     return sessionId;
   }
 
-  joinLobby(gameId: BigNumber, sessionId: BigNumber): void {
+  joinLobby(wakuNode: WakuNode, gameId: BigNumber, sessionId: BigNumber): WakuNode {
+
     throw new Error("Method not implemented.");
   }
 

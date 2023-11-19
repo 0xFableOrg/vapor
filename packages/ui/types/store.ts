@@ -1,4 +1,7 @@
 import { providers } from "ethers"
+import { WakuNode } from "@vapor/p2p"
+import { GameSession } from "./common"
+import { Vapor } from '@vapor/sdk';
 
 // eslint-disable-next-line
 type ActionMap<M extends { [index: string]: any }> = {
@@ -17,7 +20,13 @@ export enum StoreActionTypes {
   SET_PROVIDER = "SET_PROVIDER",
   SET_BALANCE = "SET_BALANCE",
   SET_CHAIN_ID = "SET_CHAIN_ID",
+  SET_WAKU_NODE = "SET_WAKU_NODE",
+  SET_ALL_ROOMS = 'SET_ALL_ROOMS',
+  ADD_ROOM = "ADD_ROOM",
+  SET_ROOM = "SET_ROOM",
+  REMOVE_ROOM = "REMOVE_ROOM",
   CLEAR_STATE = "CLEAR_STATE",
+  SET_VAPOR_INSTANCE = "SET_VAPOR_INSTANCE",
 }
 
 export interface StoreState {
@@ -25,6 +34,9 @@ export interface StoreState {
   account?: string
   balance?: string
   chainId?: number
+  wakuNode?: WakuNode
+  rooms?: GameSession[]
+  vaporInstance?: Vapor,
 }
 
 type StorePayload = {
@@ -39,6 +51,24 @@ type StorePayload = {
   }
   [StoreActionTypes.SET_CHAIN_ID]: {
     chainId: number
+  }
+  [StoreActionTypes.SET_WAKU_NODE]: {
+    wakuNode: WakuNode
+  }
+  [StoreActionTypes.ADD_ROOM]: {
+    room: GameSession
+  }
+  [StoreActionTypes.SET_ALL_ROOMS]: {
+    rooms: GameSession[]
+  }
+  [StoreActionTypes.SET_ROOM]: {
+    room: GameSession
+  }
+  [StoreActionTypes.REMOVE_ROOM]: {
+    room: GameSession
+  }
+  [StoreActionTypes.SET_VAPOR_INSTANCE]: {
+    vaporInstance: Vapor;
   }
   [StoreActionTypes.CLEAR_STATE]: undefined
 }
