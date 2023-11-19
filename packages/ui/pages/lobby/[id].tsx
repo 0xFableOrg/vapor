@@ -11,6 +11,8 @@ import LobbyChat from "@components/Lobby/LobbyChat"
 const LobbyIdPage: NextPage = () => {
   const router = useRouter()
   const { id } = router.query
+  const [ name, setName ] = useState<string | null>(null)
+  const [ avatar, setAvatar ] = useState<number | null>(null)
 
   // define a LobbySession type to get data from contract
   const [lobbyData, setLobbyData] = useState<string | null>(null)
@@ -40,7 +42,10 @@ const LobbyIdPage: NextPage = () => {
             address={`0x413C841B1af94ae352A080E9Acf25Fd9be5211c9`}
           />
         </div>
-        <SelectedLobbyConfig />
+        <SelectedLobbyConfig
+          onNameChange={setName}
+          onAvatarChange={setAvatar}
+        />
       </div>
       <div className="flex flex-row w-full h-[50%] space-x-4">
         <LobbyChat />

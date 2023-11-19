@@ -27,7 +27,6 @@ const Lobby: React.FC = () => {
   const [isJoining, setIsJoining] = useState<boolean>(false);
 
   const { account, provider } = store;
-
   useEffect(() => {
     const asyncFn = async () => {
       const gamesPromise = vapor!.listGames();
@@ -67,7 +66,6 @@ const Lobby: React.FC = () => {
       router.push(`/lobby/${item.sessionID.toString()}`);
     }
   };
-
   return (
     <div className="flex flex-col h-screen w-screen bg-black p-6 space-y-3">
       <main className="flex flex-col h-full w-full">

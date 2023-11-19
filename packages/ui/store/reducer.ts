@@ -54,7 +54,7 @@ const reducer: Reducer<StoreState, StoreActions> = (state: StoreState, action: S
       return {
         ...state,
         rooms: state.rooms?.filter(
-          (room) => room.gameID !== action.payload.room.gameID
+          (room) => room.gameID !== action.payload.roomId
         ),
       }
     case StoreActionTypes.SET_VAPOR_INSTANCE:

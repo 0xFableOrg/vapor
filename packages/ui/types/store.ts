@@ -65,7 +65,7 @@ type StorePayload = {
     room: GameSession
   }
   [StoreActionTypes.REMOVE_ROOM]: {
-    room: GameSession
+    roomId: string
   }
   [StoreActionTypes.SET_VAPOR_INSTANCE]: {
     vaporInstance: Vapor;
