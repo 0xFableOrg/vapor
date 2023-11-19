@@ -27,10 +27,15 @@ export interface DemoGameInterface extends utils.Interface {
     "init(address)": FunctionFragment;
     "receiveInitialSettings(uint256,bytes)": FunctionFragment;
     "startGame(uint256,address[],bytes,bytes[])": FunctionFragment;
+    "vaporGameID()": FunctionFragment;
   };
 
   getFunction(
-    nameOrSignatureOrTopic: "init" | "receiveInitialSettings" | "startGame"
+    nameOrSignatureOrTopic:
+      | "init"
+      | "receiveInitialSettings"
+      | "startGame"
+      | "vaporGameID"
   ): FunctionFragment;
 
   encodeFunctionData(functionFragment: "init", values: [string]): string;
@@ -42,6 +47,10 @@ export interface DemoGameInterface extends utils.Interface {
     functionFragment: "startGame",
     values: [BigNumberish, string[], BytesLike, BytesLike[]]
   ): string;
+  encodeFunctionData(
+    functionFragment: "vaporGameID",
+    values?: undefined
+  ): string;
 
   decodeFunctionResult(functionFragment: "init", data: BytesLike): Result;
   decodeFunctionResult(
@@ -49,6 +58,10 @@ export interface DemoGameInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "startGame", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "vaporGameID",
+    data: BytesLike
+  ): Result;
 
   events: {};
 }
@@ -98,6 +111,8 @@ export interface DemoGame extends BaseContract {
       playerSettings: BytesLike[],
       overrides?: Overrides & { from?: string }
     ): Promise<ContractTransaction>;
+
+    vaporGameID(overrides?: CallOverrides): Promise<[BigNumber]>;
   };
 
   init(
@@ -119,6 +134,8 @@ export interface DemoGame extends BaseContract {
     overrides?: Overrides & { from?: string }
   ): Promise<ContractTransaction>;
 
+  vaporGameID(overrides?: CallOverrides): Promise<BigNumber>;
+
   callStatic: {
     init(vapor: string, overrides?: CallOverrides): Promise<void>;
 
@@ -135,6 +152,8 @@ export interface DemoGame extends BaseContract {
       playerSettings: BytesLike[],
       overrides?: CallOverrides
     ): Promise<void>;
+
+    vaporGameID(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   filters: {};
@@ -158,6 +177,8 @@ export interface DemoGame extends BaseContract {
       playerSettings: BytesLike[],
       overrides?: Overrides & { from?: string }
     ): Promise<BigNumber>;
+
+    vaporGameID(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -179,5 +200,7 @@ export interface DemoGame extends BaseContract {
       playerSettings: BytesLike[],
       overrides?: Overrides & { from?: string }
     ): Promise<PopulatedTransaction>;
+
+    vaporGameID(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
 }

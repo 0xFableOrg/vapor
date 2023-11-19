@@ -27,6 +27,18 @@ import type {
 } from "./common";
 
 export declare namespace Vapor {
+  export type SettingDeclarationStruct = {
+    name: string;
+    valueType: BigNumberish;
+    allowedValues: string[];
+  };
+
+  export type SettingDeclarationStructOutput = [string, number, string[]] & {
+    name: string;
+    valueType: number;
+    allowedValues: string[];
+  };
+
   export type SessionStruct = {
     gameID: BigNumberish;
     sessionID: BigNumberish;
@@ -53,18 +65,6 @@ export declare namespace Vapor {
     creator: string;
     status: number;
     initialSettings: string;
-  };
-
-  export type SettingDeclarationStruct = {
-    name: string;
-    valueType: BigNumberish;
-    allowedValues: string[];
-  };
-
-  export type SettingDeclarationStructOutput = [string, number, string[]] & {
-    name: string;
-    valueType: number;
-    allowedValues: string[];
   };
 
   export type GameConfigStruct = {
@@ -104,7 +104,10 @@ export interface VaporInterface extends utils.Interface {
     "completeSession(uint256)": FunctionFragment;
     "createSession(uint256,string,bytes)": FunctionFragment;
     "gameConfigs(uint256)": FunctionFragment;
+    "getInitialSettingsManifest(uint256)": FunctionFragment;
     "getJoinableSessions()": FunctionFragment;
+    "getPlayerSettingsManifest(uint256)": FunctionFragment;
+    "getStartSettingsManifest(uint256)": FunctionFragment;
     "nextGameID()": FunctionFragment;
     "nextSessionID()": FunctionFragment;
     "registerGame((uint256,string,address,(string,uint8,string[])[],(string,uint8,string[])[],(string,uint8,string[])[],function,function))": FunctionFragment;
@@ -118,7 +121,10 @@ export interface VaporInterface extends utils.Interface {
       | "completeSession"
       | "createSession"
       | "gameConfigs"
+      | "getInitialSettingsManifest"
       | "getJoinableSessions"
+      | "getPlayerSettingsManifest"
+      | "getStartSettingsManifest"
       | "nextGameID"
       | "nextSessionID"
       | "registerGame"
@@ -140,8 +146,20 @@ export interface VaporInterface extends utils.Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "getInitialSettingsManifest",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "getJoinableSessions",
     values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getPlayerSettingsManifest",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getStartSettingsManifest",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "nextGameID",
@@ -181,7 +199,19 @@ export interface VaporInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "getInitialSettingsManifest",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "getJoinableSessions",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getPlayerSettingsManifest",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getStartSettingsManifest",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "nextGameID", data: BytesLike): Result;
@@ -298,9 +328,24 @@ export interface Vapor extends BaseContract {
       }
     >;
 
+    getInitialSettingsManifest(
+      gameID: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[Vapor.SettingDeclarationStructOutput[]]>;
+
     getJoinableSessions(
       overrides?: CallOverrides
     ): Promise<[Vapor.SessionStructOutput[]]>;
+
+    getPlayerSettingsManifest(
+      gameID: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[Vapor.SettingDeclarationStructOutput[]]>;
+
+    getStartSettingsManifest(
+      gameID: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<[Vapor.SettingDeclarationStructOutput[]]>;
 
     nextGameID(overrides?: CallOverrides): Promise<[BigNumber]>;
 
@@ -366,9 +411,24 @@ export interface Vapor extends BaseContract {
     }
   >;
 
+  getInitialSettingsManifest(
+    gameID: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<Vapor.SettingDeclarationStructOutput[]>;
+
   getJoinableSessions(
     overrides?: CallOverrides
   ): Promise<Vapor.SessionStructOutput[]>;
+
+  getPlayerSettingsManifest(
+    gameID: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<Vapor.SettingDeclarationStructOutput[]>;
+
+  getStartSettingsManifest(
+    gameID: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<Vapor.SettingDeclarationStructOutput[]>;
 
   nextGameID(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -434,9 +494,24 @@ export interface Vapor extends BaseContract {
       }
     >;
 
+    getInitialSettingsManifest(
+      gameID: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<Vapor.SettingDeclarationStructOutput[]>;
+
     getJoinableSessions(
       overrides?: CallOverrides
     ): Promise<Vapor.SessionStructOutput[]>;
+
+    getPlayerSettingsManifest(
+      gameID: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<Vapor.SettingDeclarationStructOutput[]>;
+
+    getStartSettingsManifest(
+      gameID: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<Vapor.SettingDeclarationStructOutput[]>;
 
     nextGameID(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -518,7 +593,22 @@ export interface Vapor extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    getInitialSettingsManifest(
+      gameID: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     getJoinableSessions(overrides?: CallOverrides): Promise<BigNumber>;
+
+    getPlayerSettingsManifest(
+      gameID: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getStartSettingsManifest(
+      gameID: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     nextGameID(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -564,7 +654,22 @@ export interface Vapor extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    getInitialSettingsManifest(
+      gameID: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     getJoinableSessions(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getPlayerSettingsManifest(
+      gameID: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getStartSettingsManifest(
+      gameID: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

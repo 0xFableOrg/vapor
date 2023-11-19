@@ -237,4 +237,19 @@ contract Vapor {
     }
 
     // =============================================================================================
+    // Ugly hacks because Ethers.js sucks
+
+    function getInitialSettingsManifest(uint256 gameID) external view returns (SettingDeclaration[] memory) {
+        return gameConfigs[gameID].initialSettingsManifest;
+    }
+
+    function getStartSettingsManifest(uint256 gameID) external view returns (SettingDeclaration[] memory) {
+        return gameConfigs[gameID].startSettingsManifest;
+    }
+
+    function getPlayerSettingsManifest(uint256 gameID) external view returns (SettingDeclaration[] memory) {
+        return gameConfigs[gameID].playerSettingsManifest;
+    }
+
+    // =============================================================================================
 }

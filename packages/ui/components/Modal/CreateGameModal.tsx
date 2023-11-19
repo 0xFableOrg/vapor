@@ -15,22 +15,24 @@ interface CreateGameModalProps {} // eslint-disable-line
 const CreateGameModal: React.FC<CreateGameModalProps> = () => {
   const { dispatch, store } = useStore()
   const { setModal } = useModal()
-  const { isReady, vapor } = useVapor(deployment.Vapor);
+  const { isReady, vapor } = useVapor(deployment.Vapor, deployment.DemoGame);
 
   const demoGameContract = useMemo(() => {
     if (!vapor || !store.provider) return null
-    return new ethers.Contract(
-      deployment.DemoGame,
-      vapor.DemoGameContract.interface,
-      store.provider.getSigner()!)
+    return vapor.DemoGameContract
+    // return new ethers.Contract(
+    //   deployment.DemoGame,
+    //   vapor.DemoGameContract.interface,
+    //   store.provider.getSigner()!)
   }, [vapor, store.provider]);
 
   const vaporContract = useMemo(() => {
     if (!vapor || !store.provider) return null
-    return new ethers.Contract(
-      deployment.Vapor,
-      vapor.VaporContract.interface,
-      store.provider.getSigner()!)
+    return vapor.VaporContract
+    // return new ethers.Contract(
+    //   deployment.Vapor,
+    //   vapor.VaporContract.interface,
+    //   store.provider.getSigner()!)
   }, [vapor, store.provider]);
 
   const [numberOfPlayers, setNumberOfPlayers] = useState<number>(0)
@@ -63,9 +65,8 @@ const CreateGameModal: React.FC<CreateGameModalProps> = () => {
       console.log("null contract")
       return
     }
-    const gameID = await demoGameContract.gameID()
-    const gameConfig = await vaporContract.gameConfigs(gameID)
-    const manifest = gameConfig.initialSettingsManifest
+    const gameID = await demoGameContract.vaporGameID()
+    const manifest = await vaporContract.getInitialSettingsManifest(gameID)
     const room = await vapor!.createLobby(gameID, "My Lobby",
       abiEncodeSettings(
         manifest,

@@ -6,7 +6,7 @@ import {Vapor} from "./Vapor.sol";
 contract DemoGame {
 
     bool private initialized = false;
-    uint256 vaporGameID;
+    uint256 public vaporGameID;
 
     function receiveInitialSettings(uint256 sessionID, bytes calldata initialSettings) external {
         // noop

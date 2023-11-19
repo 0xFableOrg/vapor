@@ -83,6 +83,7 @@ deploy: build
 		out/deployment.txt \
 		out/abis.json \
 		> out/deployment.json
+	cd ../sdk && pnpm generate:contract-type
 .PHONY: deploy
 
 # Sometimes the deployment crashes, this allows us to see why. Hardcoded to only use local

@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { useStore } from "@store/store";
 import { StoreActionTypes } from "@type/store";
 import { Vapor } from "@vapor/sdk";
-import { VoidSigner, providers } from "ethers";
+import { providers } from "ethers";
 
-export const useVapor = (vaporContractAddr: string) => {
+export const useVapor = (vaporContractAddr: string, demoGameContractAddr: string) => {
   const [isReady, setIsReady] = useState<boolean>(false);
   const { store, dispatch } = useStore();
   const { provider, account } = store;
@@ -18,6 +18,7 @@ export const useVapor = (vaporContractAddr: string) => {
         payload: {
           vaporInstance: new Vapor(
             vaporContractAddr,
+            demoGameContractAddr,
             provider.getSigner(account)
           ),
         },

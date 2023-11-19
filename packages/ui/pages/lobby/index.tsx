@@ -18,7 +18,7 @@ const Lobby: React.FC = () => {
   const router = useRouter();
   const { setModal } = useModal();
   const { store } = useStore();
-  const { isReady, vapor } = useVapor(deployment.Vapor);
+  const { isReady, vapor } = useVapor(deployment.Vapor, deployment.DemoGame);
   const { isWakuReady, wakuNode } = useWakuNode();
   const [gamesArray, setGamesArray] = useState<Vapor.GameConfigStruct[]>([]);
   const [lobbiesArray, setLobbiesArray] = useState<Vapor.SessionStructOutput[]>(
