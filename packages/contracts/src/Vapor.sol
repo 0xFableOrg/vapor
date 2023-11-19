@@ -238,9 +238,9 @@ contract Vapor {
      * according to some criteria (sessionID, name, ...).
      */
     function getJoinableSessions() external view returns (Session[] memory) {
-        Session[] memory result = new Session[](joinableSessions.length);
-        for (uint256 i = 0; i < joinableSessions.length; i++) {
-            result[i] = sessions[joinableSessions[i]];
+        Session[] memory result = new Session[](joinableSessions.length - 1);
+        for (uint256 i = 1; i < joinableSessions.length; i++) {
+            result[i - 1] = sessions[joinableSessions[i]];
         }
         return result;
     }
