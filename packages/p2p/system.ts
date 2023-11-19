@@ -36,27 +36,17 @@ export enum SystemMessageType {
  * Protobuf message type for system messages.
  */
 const SystemMessage = new protobuf.Type("SystemMessage")
-  .add(new protobuf.OneOf("type", {
-    joinGame: SystemMessageType.JoinGame,
-    changePlayerSettings: SystemMessageType.ChangePlayerSettings,
-    changeGameSettings: SystemMessageType.ChangeGameSettings,
-    lockGameSettings: SystemMessageType.LockGameSettings,
-    markPlayerReady: SystemMessageType.MarkPlayerReady,
-    // all of the above, payload: protobuf-encoded SettingsMessage
+  .add(new protobuf.Field("type", 1, "uint64")) // SystemMessageType
+  .add(new protobuf.Field("signature", 2, "string"))
+  .add(new protobuf.Field("payload", 3, "bytes"))
+  // for chat message: protobuf-encoded ChatMessage
+  // for leave message: abi-encoded "leave" message
+  // for confirm join message: protobuf-encoded ConfirmJoin
+  // for other messages: protobuf-encoded SettingsMessage
 
-    leaveRoom: SystemMessageType.LeaveRoom,
-    // payload: abi-encoded "leave" message
-
-    chatMessage: SystemMessageType.ChatMessage,
-    // payload: protobuf-encoded ChatMessage
-
-    confirmJoin: SystemMessageType.ConfirmJoin
-  }))
-  .add(new protobuf.Field("signature", 1, "string"))
-  .add(new protobuf.Field("payload", 2, "bytes"))
   // TODO: only works for the first 2^64 sessions ;)
   // TODO: must sign over this do to avoid replays
-  .add(new protobuf.Field("sessionID", 3, "int64"))
+  .add(new protobuf.Field("sessionID", 4, "int64"))
 
 /**
  * Protobuf message type for messages that carry settings.
@@ -139,6 +129,7 @@ export async function subscribeToSystem(node: WakuNode, msgCallback: (msg: Decod
     }
 
     const address = ethers.utils.verifyMessage(systemMessage.payload, systemMessage.signature) as Address
+    console.dir(systemMessage)
     const decodedMessage: DecodedSystemMessage = {
       type: systemMessage.type,
       sessionID: systemMessage.sessionID,
