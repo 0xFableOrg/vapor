@@ -1,6 +1,5 @@
 import JoinLobbyActionButton from "@components/Button/JoinLobbyActionButton"
 import { GameStatus } from "@type/common"
-import Link from "next/link"
 import { MouseEventHandler } from "react"
 import GameStatusIndicator from "./GameStatusIndicator"
 
@@ -8,7 +7,6 @@ export type LobbyItemProps = {
   sessionId: string
   gameId: string
   name: string
-  isJoinable: boolean
   creator: string
   status: GameStatus
   currentSize: number
@@ -21,7 +19,6 @@ const LobbyItem: React.FC<LobbyItemProps> = ({
   sessionId,
   gameId,
   creator,
-  isJoinable,
   currentSize,
   maxSize,
   status,
@@ -45,7 +42,7 @@ const LobbyItem: React.FC<LobbyItemProps> = ({
           </span>
           <JoinLobbyActionButton
             onClick={onJoinClicked}
-            disabled={status !== GameStatus.Created || !isJoinable}
+            disabled={status !== GameStatus.Created}
           />
         </div>
       </div>

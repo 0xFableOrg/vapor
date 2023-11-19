@@ -5,14 +5,10 @@ import { useWakuNode } from "@hooks/useWakuNode";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { abiDecodeSettingsBytes } from "@vapor/p2p/abi";
-import { useStore } from "@store/store";
 import { SystemMessageType, sendSystemMessage, utf8ToBytes } from "@vapor/p2p";
 import {
-  useVaporCreateSession,
   useVaporGetInitialSettingsManifest,
   useVaporGetJoinableSessions,
-  useVaporNextGameId,
-  useVaporSessions,
 } from "@hooks/generated";
 import { useSignMessage } from "wagmi";
 import { deployment } from "@utils/deployment";
@@ -33,10 +29,9 @@ const Lobby: React.FC = () => {
   // store all sessions data in redux?
   const router = useRouter();
   const { setModal } = useModal();
-  const { store } = useStore();
   const [sessionSelected, setSessionSelected] = useState<SessionData>();
 
-  const { data: vaporGameSessionsData, isSuccess: isGameSessionSuccess, isFetched } =
+  const { data: vaporGameSessionsData, isSuccess: isGameSessionSuccess } =
     useVaporGetJoinableSessions({address: deployment.Vapor});
   const { data: vaporGameConfigsData, isSuccess: isGameConfigSuccess } =
     useVaporGetInitialSettingsManifest({
@@ -44,15 +39,10 @@ const Lobby: React.FC = () => {
       args: sessionSelected?.gameID ? [sessionSelected.gameID] : undefined,
     });
 
-  console.log(vaporGameSessionsData)
-  console.log(isFetched)
-  console.log(vaporGameConfigsData)
-
   const { isWakuReady, wakuNode } = useWakuNode();
   const [isJoining, setIsJoining] = useState<boolean>(false);
 
   const { signMessageAsync } = useSignMessage();
-  const { account, provider } = store;
   useEffect(() => {
     const asyncFn = () => {};
 
@@ -64,7 +54,6 @@ const Lobby: React.FC = () => {
   const onJoinClicked = (item: SessionData) => async () => {
     if (
       isGameConfigSuccess &&
-      provider &&
       isWakuReady &&
       wakuNode &&
       vaporGameConfigsData
@@ -111,7 +100,6 @@ const Lobby: React.FC = () => {
                 currentSize={4}
                 maxSize={5}
                 gameId={item.gameID.toString()}
-                isJoinable={item.joinableIndex.toString() !== "0"}
                 name={item.name}
                 sessionId={item.sessionID.toString()}
                 status={item.status}
