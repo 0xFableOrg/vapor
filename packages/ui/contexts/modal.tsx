@@ -1,12 +1,14 @@
 import React, { createContext, useCallback, useContext, useState } from "react"
 
 import WalletModal from "@components/Modal/WalletModal"
+import CreateGameModal from "@components/Modal/CreateGameModal"
 
 export enum ModalEnum {
   WALLET_MODAL = "wallet-modal",
   AUCTION_MODAL = "auction-modal",
   INFO_MODAL = "info-modal",
   REQUEST_MODAL = "request-modal",
+  CREATE_GAME_MODAL = "create-game-modal",
 }
 
 export interface ModalContextProps {
@@ -38,6 +40,7 @@ export const ModalProvider: React.FC = ({ children }) => {
     >
       {children}
       {modal == ModalEnum.WALLET_MODAL && <WalletModal />}
+      {modal == ModalEnum.CREATE_GAME_MODAL && <CreateGameModal />}
     </ModalContext.Provider>
   )
 }

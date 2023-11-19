@@ -21,4 +21,14 @@ export type GameSession = {
   name: string
   creator: string
   status: GameStatus
+};
+
+export enum ValueType {
+  Bool,
+  Int,
+  Uint,
+  Address,
+  Bytes,
+  String,
+  Enum,
 }

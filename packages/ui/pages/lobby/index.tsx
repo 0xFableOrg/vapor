@@ -1,5 +1,6 @@
 import LobbyListActionButton from "@components/Button/LobbyListActionButton";
 import LobbyItem from "@components/Lobby/LobbyItem";
+import { ModalEnum, useModal } from "@contexts/modal";
 import { GameSession, GameStatus } from "@type/common";
 import { useRouter } from "next/router";
 import React from "react";
@@ -9,6 +10,7 @@ const Lobby: React.FC = () => {
   // feed lobby ID to 'lobby/[id]', and page will fetch it from url state and get further data
   // store all sessions data in redux?
   const router = useRouter();
+  const { setModal } = useModal();
 
   // Example lobby IDs
   const lobbyItems: Array<GameSession> = [
@@ -52,7 +54,11 @@ const Lobby: React.FC = () => {
         <h1 className="font-vapor text-white text-[30px]">VAPOR</h1>
         <div className="flex flex-row-reverse w-full max-w-7xl mx-auto">
           <span>
-            <LobbyListActionButton onClick={() => {}} />
+            <LobbyListActionButton
+              onClick={() => {
+                setModal(ModalEnum.CREATE_GAME_MODAL);
+              }}
+            />
           </span>
         </div>
         <div className="flex flex-col w-full max-w-7xl mx-auto items-start justify-start p-8 mt-4 border-[1px] border-white rounded-xl space-y-3 overflow-auto">
