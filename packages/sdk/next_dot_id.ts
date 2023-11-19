@@ -54,15 +54,15 @@ export class NextDotId {
     payload: ProofPayloadType
   ): Promise<ProofPayloadResponse | null> {
     const url = buildUrl(this.baseUrl, {
-      path: "payload",
+      path: "proof/payload",
     });
 
-    const res = await post(url, payload);
-    if (!res.ok) {
+    console.log(`url: ${url}`);
+    const res = await post<ProofPayloadResponse>(url, payload);
+    if (res.status !== 200) {
       return null;
     }
 
-    const resJson = await res.json();
-    return resJson as ProofPayloadResponse;
+    return res.data;
   }
 }
