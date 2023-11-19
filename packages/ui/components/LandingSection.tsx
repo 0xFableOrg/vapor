@@ -26,7 +26,7 @@ const LandingSection: React.FC<LandingSectionProps> = () => {
   return (
     <div className="flex flex-col w-full h-[90vh] bg-black items-center justify-center space-y-10">
       <TypingText
-        text={`Viirtual Arena for Peer-to-Peer Online Rendezvous`}
+        text={`⚔️ Virtual Arena for Peer-to-Peer Online Rendezvous ⚔️`}
         speed={100}
       />
       {/* <span className="text-white text-[35px] font-capian">

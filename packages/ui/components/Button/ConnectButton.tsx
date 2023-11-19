@@ -23,7 +23,7 @@ const ConnectButton: React.FC<ConnectButtonProps> = () => {
   const { connected } = useWallet()
   const { setModal } = useModal()
   const { store } = useStore()
-  const { account, provider } = store
+  const { account, provider, chainId } = store
 
   const [ens, setEns] = useState<string | null>(null)
 
@@ -35,12 +35,13 @@ const ConnectButton: React.FC<ConnectButtonProps> = () => {
   const getEnsName = useCallback(
     async (addr: string | undefined) => {
       let ensName: string | null | undefined
-      if (addr) {
+      if (addr && chainId === 1) {
+        // only resolve ens if connected to eth mainnet
         ensName = await provider?.lookupAddress(addr)
       }
       return ensName
     },
-    [provider]
+    [chainId, provider]
   )
 
   useEffect(() => {

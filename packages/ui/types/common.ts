@@ -15,10 +15,10 @@ export enum GameStatus {
 }
 
 export type GameSession = {
-  gameID: string;
-  sessionID: string;
-  joinableIndex: number;
-  name: string;
-  creator: string;
-  status: GameStatus;
-};
+  gameID: string
+  sessionID: string
+  joinableIndex: number
+  name: string
+  creator: string
+  status: GameStatus
+}

@@ -24,10 +24,16 @@ const WalletModal: React.FC<WalletModalProps> = () => {
 
         if (account) {
           const balance = await provider?.getBalance(account)
+          const network = await provider?.getNetwork()
           balance &&
             dispatch({
               type: StoreActionTypes.SET_BALANCE,
               payload: { balance: utils.formatEther(balance) },
+            })
+          network &&
+            dispatch({
+              type: StoreActionTypes.SET_CHAIN_ID,
+              payload: { chainId: network.chainId },
             })
         }
       } catch (error) {
