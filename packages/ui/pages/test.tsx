@@ -11,7 +11,7 @@ const TestPage: NextPage = () => {
   const [messageList, setMessageList] = React.useState<string[]>([])
 
   const wakuNode = useWakuNode(setStatus, (message) => {
-      setMessageList(messageList.concat(message.toString()))
+      setMessageList(messageList.concat([JSON.stringify(message)]))
     }
   )
 
