@@ -83,6 +83,15 @@ contract Vapor {
         function (uint256, address[] memory, bytes memory, bytes[] memory) external startCallback;
     }
 
+    struct GameConfigLight {
+        uint256 gameID;
+        string name;
+        address authority;
+        SettingDeclaration[] initialSettingsManifest;
+        SettingDeclaration[] startSettingsManifest;
+        SettingDeclaration[] playerSettingsManifest;
+    }
+
     enum GameStatus {
         Created,
         Started,
@@ -103,7 +112,7 @@ contract Vapor {
     // =============================================================================================
     // FIELDS
 
-    mapping(uint256 => GameConfig) public gameConfigs;
+    mapping(uint256 => GameConfig) private gameConfigs;
     uint256 public nextGameID;
 
     mapping(uint256 => Session) public sessions;
@@ -156,14 +165,14 @@ contract Vapor {
     // ---------------------------------------------------------------------------------------------
 
     function createSession(uint256 gameID, string calldata name, bytes calldata initialSettings)
-        external
-        returns (uint256 sessionID)
+    external
+    returns (uint256 sessionID)
     {
         sessionID = nextSessionID++;
         GameConfig storage config = gameConfigs[gameID];
         config.sendInitialSettings(sessionID, initialSettings);
         sessions[sessionID] =
-            Session(gameID, sessionID, joinableSessions.length, name, msg.sender, GameStatus.Created, initialSettings);
+                        Session(gameID, sessionID, joinableSessions.length, name, msg.sender, GameStatus.Created, initialSettings);
         joinableSessions.push(sessionID);
         emit GameCreated(gameID, sessionID);
     }
@@ -249,6 +258,20 @@ contract Vapor {
 
     function getPlayerSettingsManifest(uint256 gameID) external view returns (SettingDeclaration[] memory) {
         return gameConfigs[gameID].playerSettingsManifest;
+    }
+
+    // =============================================================================================
+
+    function getGameConfig(uint256 gameID) external view returns (GameConfigLight memory) {
+        GameConfig storage config = gameConfigs[gameID];
+        GameConfigLight memory out;
+        out.gameID = config.gameID;
+        out.name = config.name;
+        out.authority = config.authority;
+        out.initialSettingsManifest = config.initialSettingsManifest;
+        out.startSettingsManifest = config.startSettingsManifest;
+        out.playerSettingsManifest = config.playerSettingsManifest;
+        return out;
     }
 
     // =============================================================================================
