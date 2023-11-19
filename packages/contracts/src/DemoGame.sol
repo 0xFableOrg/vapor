@@ -6,6 +6,7 @@ import {Vapor} from "./Vapor.sol";
 contract DemoGame {
 
     bool private initialized = false;
+    uint256 vaporGameID;
 
     function receiveInitialSettings(uint256 sessionID, bytes calldata initialSettings) external {
         // noop
@@ -70,7 +71,7 @@ contract DemoGame {
             allowedValues: avatars
         });
 
-        vapor.registerGame(Vapor.GameConfig({
+        vaporGameID = vapor.registerGame(Vapor.GameConfig({
             gameID: 0,
             name: "Demo Game",
             authority: msg.sender,
