@@ -1,35 +1,63 @@
-import React, { useCallback } from "react";
-import { utils } from "ethers";
-import Image from "next/image";
+import React, { useCallback, useState } from "react"
+import { utils } from "ethers"
+import Image from "next/image"
 
-import { useModal } from "@contexts/modal";
-import { useStore } from "@store/store";
-import { WalletType } from "@type/common";
-import { StoreActionTypes } from "@type/store";
-import { configMetamask, configWalletConnect } from "@utils/provider";
+import { useModal } from "@contexts/modal"
+import { useStore } from "@store/store"
+import { Identification, WalletType } from "@type/common"
+import { StoreActionTypes } from "@type/store"
+import { configMetamask, configWalletConnect } from "@utils/provider"
 
 interface CreateGameModalProps {} // eslint-disable-line
 
 const CreateGameModal: React.FC<CreateGameModalProps> = () => {
-  const { dispatch } = useStore();
-  const { setModal } = useModal();
+  const { dispatch } = useStore()
+  const { setModal } = useModal()
+
+  const [numberOfPlayers, setNumberOfPlayers] = useState<number>(0)
+  const [identification, setIdentification] = useState<Identification>(
+    Identification.ADDRESS
+  )
+  const identificationOptions = Object.keys(Identification).filter((key) =>
+    isNaN(Number(key))
+  )
+
+  const getImagePath = (key: string) => {
+    switch (Identification[key as keyof typeof Identification]) {
+      case Identification.NEXTID:
+        return "/img/metamask.svg"
+      case Identification.WORLDID:
+        return "/img/worldcoin.webp"
+      case Identification.ADDRESS:
+        return "/img/ens.png"
+      default:
+        return "" // Default or placeholder image path
+    }
+  }
+
+  const handleCreateRoom = useCallback(() => {
+    // web3 call to create room
+  }, [])
+
+  // initialSettingsManifest
+  // confirm - web3 calls - createSession
 
   return (
     <div
       id="default-modal"
       className="fixed top-0 left-0 z-50 flex items-center justify-center w-full y-full h-modal backdrop-blur-sm"
     >
-      <div className="relative w-full h-full max-w-md px-4 md:h-auto">
+      <div className="relative w-full h-[600px] max-w-3xl px-4 md:h-auto">
         <div className="relative bg-black border-[1px] border-white rounded-xl shadow">
           <div className="flex items-center justify-between px-6 py-4 border-b rounded-t border-white">
-            <h3 className="font-vapor text-[20px] font-semibold text-white">
+            <span className="text-[25px] text-white font-capian">
               Room creation
-            </h3>
+            </span>
             <button
               type="button"
               className="text-white bg-transparent rounded-lg text-sm p-1.5 ml-auto inline-flex items-center hover:bg-white/10"
               onClick={() => {
-                setModal(null);
+                setModal(null)
               }}
             >
               <svg
@@ -47,30 +75,77 @@ const CreateGameModal: React.FC<CreateGameModalProps> = () => {
             </button>
           </div>
 
-          <div className="flex flex-col p-6">
-            <div>
-              <label
-                htmlFor="countries"
-                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-              >
-                Select an option
-              </label>
-              <select
-                id="countries"
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              >
-                <option selected>Choose a country</option>
-                <option value="US">United States</option>
-                <option value="CA">Canada</option>
-                <option value="FR">France</option>
-                <option value="DE">Germany</option>
-              </select>
+          <div className="flex flex-col items-start justify-center p-6 space-y-6">
+            <span className="text-[20px] text-white font-capian">
+              choose your room mix
+            </span>
+            <div className="flex flex-col w-full h-full space-y-5">
+              <div className="flex flex-row items-center justify-between w-full">
+                <span className="font-capian text-white text-[15px]">
+                  number of participants
+                </span>
+                <div className="flex flex-row space-x-2 items-center justify-center">
+                  {[1, 2, 3, 4, 5].map((number) => (
+                    <button
+                      key={number}
+                      className={`text-white text-sm font-bold py-2 px-4 rounded mb-1 font-vapor text-[18px] ${
+                        number === numberOfPlayers
+                          ? "bg-blue-700"
+                          : "bg-gray-500 hover:bg-blue-700"
+                      }`}
+                      onClick={() => setNumberOfPlayers(number)} // Replace with your actual event handler
+                    >
+                      {number}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="flex flex-row items-center justify-between w-full">
+                <span className="font-capian text-white text-[15px]">
+                  identification
+                </span>
+                <div className="flex flex-row space-x-2 items-center justify-center">
+                  {identificationOptions.map((key) => (
+                    <button
+                      key={key}
+                      className={`text-white text-sm font-bold h-[50px] w-[50px] flex items-center justify-center rounded mb-1 font-vapor text-[18px] ${
+                        Identification[key as keyof typeof Identification] ===
+                        identification
+                          ? "bg-blue-700"
+                          : "bg-gray-500 hover:bg-blue-700"
+                      }`}
+                      onClick={() =>
+                        setIdentification(
+                          Identification[key as keyof typeof Identification]
+                        )
+                      }
+                    >
+                      <Image
+                        src={getImagePath(key)}
+                        alt={key}
+                        width={30}
+                        height={30}
+                      />{" "}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="flex w-full items-center justify-center">
+                <button
+                  className="flex items-center justify-center w-[100px] h-[50px] rounded-xl bg-black  border-[1px] border-gray-400"
+                  onClick={handleCreateRoom}
+                >
+                  <span className="text-white font-vapor text-[20px]">
+                    create
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default CreateGameModal;
+export default CreateGameModal

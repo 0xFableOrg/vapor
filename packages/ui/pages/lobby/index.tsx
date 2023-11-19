@@ -1,39 +1,39 @@
-import LobbyListActionButton from "@components/Button/LobbyListActionButton";
-import LobbyItem from "@components/Lobby/LobbyItem";
-import { ModalEnum, useModal } from "@contexts/modal";
-import { useVapor } from "@hooks/useVapor";
-import { useWakuNode } from "@hooks/useWakuNode";
-import { GameSession } from "@type/common";
-import { Vapor } from "@vapor/sdk/contract_types";
-import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import LobbyListActionButton from "../../components/Button/LobbyListActionButton"
+import LobbyItem from "@components/Lobby/LobbyItem"
+import { ModalEnum, useModal } from "@contexts/modal"
+import { useVapor } from "@hooks/useVapor"
+import { useWakuNode } from "@hooks/useWakuNode"
+import { GameSession } from "@type/common"
+import { Vapor } from "@vapor/sdk/contract_types"
+import { useRouter } from "next/router"
+import React, { useEffect, useState } from "react"
 
 const Lobby: React.FC = () => {
   // get lobby IDs from getJoinableSessions function in the contract
   // feed lobby ID to 'lobby/[id]', and page will fetch it from url state and get further data
   // store all sessions data in redux?
-  const router = useRouter();
-  const { setModal } = useModal();
-  const { isReady, vapor } = useVapor("");
+  const router = useRouter()
+  const { setModal } = useModal()
+  // const { isReady, vapor } = useVapor("");
   const [lobbiesArray, setLobbiesArray] = useState<Vapor.SessionStructOutput[]>(
     []
-  );
+  )
 
-  useEffect(() => {
-    const asyncFn = async () => {
-      const lobbies = await vapor!.listAllActiveLobbies();
-      setLobbiesArray(lobbies);
-    };
-    if (isReady && vapor) {
-      asyncFn();
-    }
-  }, [isReady, vapor]);
+  // useEffect(() => {
+  //   const asyncFn = async () => {
+  //     const lobbies = await vapor!.listAllActiveLobbies();
+  //     setLobbiesArray(lobbies);
+  //   };
+  //   if (isReady && vapor) {
+  //     asyncFn();
+  //   }
+  // }, [isReady, vapor]);
 
   const onJoinClicked = (item: Vapor.SessionStructOutput) => async () => {
     // const result = await vapor?.joinLobby(wakuNode, item.gameID, item.sessionID);
     // Set loading messages here
-    router.push(`/lobby/${item.sessionID.toString()}`);
-  };
+    router.push(`/lobby/${item.sessionID.toString()}`)
+  }
 
   return (
     <div className="flex flex-col h-screen w-screen bg-black p-6 space-y-3">
@@ -43,7 +43,7 @@ const Lobby: React.FC = () => {
           <span>
             <LobbyListActionButton
               onClick={() => {
-                setModal(ModalEnum.CREATE_GAME_MODAL);
+                setModal(ModalEnum.CREATE_GAME_MODAL)
               }}
             />
           </span>
@@ -66,7 +66,7 @@ const Lobby: React.FC = () => {
         </div>
       </main>
     </div>
-  );
-};
+  )
+}
 
-export default Lobby;
+export default Lobby
