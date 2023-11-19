@@ -187,7 +187,6 @@ export async function setupWakuForSystem(
   msgCallback: (msg: DecodedSystemMessage) => void
 ): Promise<WakuNode> {
   const node = await startWakuNode()
-  await subscribeToSystem(node, msgCallback)
   signalStatus("Connecting to a peer")
 
   // Best effort method that waits for the Waku node to be connected to remote

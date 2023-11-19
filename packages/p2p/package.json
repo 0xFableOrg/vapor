@@ -4,10 +4,16 @@
   "private": true,
   "license": "BSD-3-Clause-Clear",
   "version": "1.0.0",
+  "scripts": {
+    "build": "tsc"
+  },
   "dependencies": {
     "@vapor/sdk": "workspace:^",
     "@waku/sdk": "^0.0.21",
     "ethers": "^5.7.2",
     "protobufjs": "^7.2.5"
+  },
+  "devDependencies": {
+    "typescript": "^5.2.2"
   }
 }
