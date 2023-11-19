@@ -17,4 +17,3 @@ node_modules/
 
 # SDK
 /packages/sdk/out
-/packages/sdk/contract_types
