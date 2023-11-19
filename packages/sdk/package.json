@@ -17,6 +17,9 @@
   },
   "dependencies": {
     "@vapor/p2p": "workspace:^",
+    "@ethersproject/abi": "^5.7.0",
+    "@ethersproject/providers": "^5.7.2",
+    "build-url-ts": "^6.1.5",
     "ethers": "5.7.2"
   }
 }
