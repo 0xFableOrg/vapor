@@ -61,7 +61,7 @@ contract Vapor {
         /**
          * Specifies the settings to be provided for each player at game start time.
          */
-        SettingDeclaration[][] playerSettingsManifest;
+        SettingDeclaration[] playerSettingsManifest;
         /**
          * This gets called with the sessionID and the encoded settings to validate the initial
          * settings. The contract must validate the settings and revert if they are invalid. This
@@ -71,7 +71,7 @@ contract Vapor {
          * The settings will be encoded in the same way as abi.encode for a struct containing the
          * fields listed in the manifest.
          */
-        function (uint256, bytes calldata) external sendInitialSettings;
+        function (uint256, bytes memory) external sendInitialSettings;
         /**
          * This gets called with with the sessionID, player list, encoded start settings, and
          * encoded per-player start settings. This includes verifying enum conformity. The contract
@@ -80,7 +80,7 @@ contract Vapor {
          * The settings will be encoded in the same way as abi.encode for a struct containing the
          * fields listed in the manifest. Enum conformity will be pre-validated.
          */
-        function (uint256, address[] calldata, bytes calldata, bytes[] calldata) external startCallback;
+        function (uint256, address[] memory, bytes memory, bytes[] memory) external startCallback;
     }
 
     enum GameStatus {
@@ -130,11 +130,7 @@ contract Vapor {
         config.authority = config_.authority;
         copySettingDeclarations(config.initialSettingsManifest, config_.initialSettingsManifest);
         copySettingDeclarations(config.startSettingsManifest, config_.startSettingsManifest);
-        // copy per-user settings
-        for (uint256 i = 0; i < config_.playerSettingsManifest.length; i++) {
-            config.playerSettingsManifest.push();
-            copySettingDeclarations(config.playerSettingsManifest[i], config_.playerSettingsManifest[i]);
-        }
+        copySettingDeclarations(config.playerSettingsManifest, config_.playerSettingsManifest);
         emit GameRegistered(gameID);
     }
 
