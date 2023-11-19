@@ -15,7 +15,8 @@
       "@styles/*": ["./styles/*"],
       "@store/*": ["./store/*"],
       "@abi/*": ["./abi/*"],
-      "@testing/*": ["./testing/*"]
+      "@testing/*": ["./testing/*"],
+      "contracts/*": ["../contracts/*"]
     }
   }
 }

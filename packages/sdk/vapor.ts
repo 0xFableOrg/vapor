@@ -102,8 +102,9 @@ export class Vapor implements IVapor {
     return sessionId;
   }
 
-  joinLobby(wakuNode: WakuNode, gameId: BigNumber, sessionId: BigNumber): WakuNode {
-
+  joinLobby(wakuNode: WakuNode, gameId: BigNumber, sessionId: BigNumber) {
+    // TODO: send join message
+    // TODO: transition to lobby page
     throw new Error("Method not implemented.");
   }
 

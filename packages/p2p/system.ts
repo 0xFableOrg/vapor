@@ -77,7 +77,7 @@ const ChatMessage = new protobuf.Type("ChatMessage")
  * `settingsNames` and `settingsValues` are filled for all other messages except leave.
  */
 type SystemMessageInputs = {
-  type: number
+  type: SystemMessageType
   sessionID: number
   settingsNames?: string[]
   settingsValues?: Uint8Array[]
