@@ -1,5 +1,5 @@
 import { BigNumber, BytesLike, Signer, ethers } from "ethers";
-import { Vapor as VaporContract, Vapor__factory } from "./contract_types";
+import { DemoGame__factory, Vapor as VaporContract, DemoGame as DemoGameContract, Vapor__factory } from "./contract_types"
 import { Address, SystemMessageType, WakuNode, sendSystemMessage, utf8ToBytes } from "@vapor/p2p"
 
 interface IVapor {
@@ -27,13 +27,19 @@ interface IVapor {
 }
 
 export class Vapor implements IVapor {
-  private readonly VaporContract: VaporContract;
+  readonly VaporContract: VaporContract;
+  readonly DemoGameContract: DemoGameContract;
   constructor(
     private readonly vaporContract: string,
+    private readonly demoGameContract: string,
     private readonly signer: Signer
   ) {
     this.VaporContract = Vapor__factory.connect(
       this.vaporContract,
+      this.signer
+    );
+    this.DemoGameContract = DemoGame__factory.connect(
+      this.demoGameContract,
       this.signer
     );
   }
@@ -78,7 +84,6 @@ export class Vapor implements IVapor {
     gameId: BigNumber,
     name: string,
     initialSettings: BytesLike,
-    conditionalCallback: () => void // , listener callback
   ): Promise<BigNumber> {
     const tx = await this.VaporContract.createSession(
       gameId,
@@ -93,7 +98,6 @@ export class Vapor implements IVapor {
       data
     );
 
-    conditionalCallback();
     const sessionId = BigNumber.from(result[1]);
     return sessionId;
   }

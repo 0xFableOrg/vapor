@@ -1,18 +1,37 @@
-import React, { useCallback, useState } from "react"
-import { utils } from "ethers"
+import React, { useCallback, useMemo, useState } from "react"
+import { ethers } from "ethers"
 import Image from "next/image"
 
 import { useModal } from "@contexts/modal"
 import { useStore } from "@store/store"
-import { Identification, WalletType } from "@type/common"
-import { StoreActionTypes } from "@type/store"
-import { configMetamask, configWalletConnect } from "@utils/provider"
+import { Identification } from "@type/common"
+import { useVapor } from "@hooks/useVapor"
+import { deployment } from "@utils/deployment"
+import { abiEncodeSettings } from "@vapor/p2p"
+import { Vapor } from "@vapor/sdk/contract_types"
 
 interface CreateGameModalProps {} // eslint-disable-line
 
 const CreateGameModal: React.FC<CreateGameModalProps> = () => {
-  const { dispatch } = useStore()
+  const { dispatch, store } = useStore()
   const { setModal } = useModal()
+  const { isReady, vapor } = useVapor(deployment.Vapor);
+
+  const demoGameContract = useMemo(() => {
+    if (!vapor || !store.provider) return null
+    return new ethers.Contract(
+      deployment.DemoGame,
+      vapor.DemoGameContract.interface,
+      store.provider.getSigner()!)
+  }, [vapor, store.provider]);
+
+  const vaporContract = useMemo(() => {
+    if (!vapor || !store.provider) return null
+    return new ethers.Contract(
+      deployment.Vapor,
+      vapor.VaporContract.interface,
+      store.provider.getSigner()!)
+  }, [vapor, store.provider]);
 
   const [numberOfPlayers, setNumberOfPlayers] = useState<number>(0)
   const [identification, setIdentification] = useState<Identification>(
@@ -35,8 +54,28 @@ const CreateGameModal: React.FC<CreateGameModalProps> = () => {
     }
   }
 
-  const handleCreateRoom = useCallback(() => {
-    // web3 call to create room
+  const handleCreateRoom = useCallback(async () => {
+    if (!store.provider) {
+      console.log("null provider")
+      return
+    }
+    if (!demoGameContract || !vaporContract) {
+      console.log("null contract")
+      return
+    }
+    const gameID = await demoGameContract.gameID()
+    const gameConfig = await vaporContract.gameConfigs(gameID)
+    const manifest = gameConfig.initialSettingsManifest
+    const room = await vapor!.createLobby(gameID, "My Lobby",
+      abiEncodeSettings(
+        manifest,
+        manifest.map((decl: Vapor.SettingDeclarationStruct) => decl.name),
+        [
+          numberOfPlayers,
+          identification === Identification.WORLDID,
+          identification === Identification.NEXTID
+        ])
+    )
   }, [])
 
   // initialSettingsManifest

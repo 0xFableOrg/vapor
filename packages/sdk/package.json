@@ -5,9 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "generate:contract-type": "pnpm generate:vapor-type && pnpm generate:demo-game_type",
-    "generate:vapor-type": "typechain --target ethers-v5 --out-dir ./contract_types '../contracts/out/Vapor.sol/*.json'",
-    "generate:demo-game-type": "typechain --target ethers-v5 --out-dir ./contract_types '../contracts/out/Vapor.sol/*.json'"
+    "generate:contract-type": "typechain --target ethers-v5 --out-dir ./contract_types '../contracts/out/?(Vapor.sol|DemoGame.sol)/*.json'"
   },
   "keywords": [],
   "author": "",
