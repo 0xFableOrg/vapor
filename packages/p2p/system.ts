@@ -80,7 +80,7 @@ type SystemMessageInputs = {
   settingsValues?: Uint8Array[]
   message?: string
   joiner?: Address
-  signFn?: (payload: string) => Address
+  signFn?: (payload: string) => string | Promise<string>
 }
 
 /**

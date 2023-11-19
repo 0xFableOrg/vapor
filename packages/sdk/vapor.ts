@@ -18,10 +18,8 @@ interface IVapor {
     startGameCallBack: () => void
   ): Promise<void>;
   endGame(sessionId: BigNumber): Promise<void>;
-  joinLobby(wakuNode: WakuNode, sessionId: BigNumber, settingsNames: string[], settingsValues: Uint8Array[], signFn: (payload: string) => Address): void;
+  joinLobby(wakuNode: WakuNode, sessionId: BigNumber, settingsNames: string[], settingsValues: Uint8Array[], signFn: (payload: string) => string | Promise<string>): void;
   listGames(
-    skip: number,
-    take: number
   ): Promise<VaporContract.GameConfigStruct[]>;
   listAllActiveLobbies(
     gameId: BigNumber
@@ -41,12 +39,10 @@ export class Vapor implements IVapor {
   }
 
   async listGames(
-    skip: number,
-    take: number
   ): Promise<VaporContract.GameConfigStruct[]> {
-    const fromId = skip;
     let games: VaporContract.GameConfigStruct[] = [];
-    for (let i = fromId; i < fromId + take; i++) {
+    const nextId = await this.VaporContract.nextGameID();
+    for (let i = 0; i < nextId.toNumber(); i++) {
       const game = await this.VaporContract.gameConfigs(i);
       games.push(game as unknown as VaporContract.GameConfigStruct);
     }
@@ -102,7 +98,7 @@ export class Vapor implements IVapor {
     return sessionId;
   }
 
-  async joinLobby(wakuNode: WakuNode, sessionId: BigNumber, settingsNames: string[], settingsValues: Uint8Array[], signFn: (payload: string) => Address) {
+  async joinLobby(wakuNode: WakuNode, sessionId: BigNumber, settingsNames: string[], settingsValues: Uint8Array[], signFn: (payload: string) => string | Promise<string>) {
     await sendSystemMessage(wakuNode, {
       type: SystemMessageType.JoinGame,
       sessionID: sessionId.toNumber(),
