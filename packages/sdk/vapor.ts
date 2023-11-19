@@ -1,6 +1,6 @@
 import { BigNumber, BytesLike, Signer, ethers } from "ethers";
 import { Vapor as VaporContract, Vapor__factory } from "./contract_types";
-import { WakuNode } from "@vapor/p2p"
+import { Address, SystemMessageType, WakuNode, sendSystemMessage, utf8ToBytes } from "@vapor/p2p"
 
 interface IVapor {
   createNewGame(config: VaporContract.GameConfigStruct): Promise<BigNumber>;
@@ -18,7 +18,7 @@ interface IVapor {
     startGameCallBack: () => void
   ): Promise<void>;
   endGame(sessionId: BigNumber): Promise<void>;
-  joinLobby(wakuNode: WakuNode, gameId: BigNumber, sessionId: BigNumber): void;
+  joinLobby(wakuNode: WakuNode, sessionId: BigNumber, settingsNames: string[], settingsValues: Uint8Array[], signFn: (payload: string) => Address): void;
   listGames(
     skip: number,
     take: number
@@ -102,10 +102,14 @@ export class Vapor implements IVapor {
     return sessionId;
   }
 
-  joinLobby(wakuNode: WakuNode, gameId: BigNumber, sessionId: BigNumber) {
-    // TODO: send join message
-    // TODO: transition to lobby page
-    throw new Error("Method not implemented.");
+  async joinLobby(wakuNode: WakuNode, sessionId: BigNumber, settingsNames: string[], settingsValues: Uint8Array[], signFn: (payload: string) => Address) {
+    await sendSystemMessage(wakuNode, {
+      type: SystemMessageType.JoinGame,
+      sessionID: sessionId.toNumber(),
+      settingsNames,
+      settingsValues,
+      signFn
+    })
   }
 
   async startGame(
@@ -126,7 +130,7 @@ export class Vapor implements IVapor {
 
     startGameCallBack();
   }
-  
+
   async endGame(sessionId: BigNumber): Promise<void> {
     await this.VaporContract.completeSession(sessionId);
   }

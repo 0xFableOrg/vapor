@@ -73,7 +73,7 @@ export declare namespace Vapor {
     authority: string;
     initialSettingsManifest: Vapor.SettingDeclarationStruct[];
     startSettingsManifest: Vapor.SettingDeclarationStruct[];
-    playerSettingsManifest: Vapor.SettingDeclarationStruct[][];
+    playerSettingsManifest: Vapor.SettingDeclarationStruct[];
     sendInitialSettings: any;
     startCallback: any;
   };
@@ -84,7 +84,7 @@ export declare namespace Vapor {
     string,
     Vapor.SettingDeclarationStructOutput[],
     Vapor.SettingDeclarationStructOutput[],
-    Vapor.SettingDeclarationStructOutput[][],
+    Vapor.SettingDeclarationStructOutput[],
     any,
     any
   ] & {
@@ -93,7 +93,7 @@ export declare namespace Vapor {
     authority: string;
     initialSettingsManifest: Vapor.SettingDeclarationStructOutput[];
     startSettingsManifest: Vapor.SettingDeclarationStructOutput[];
-    playerSettingsManifest: Vapor.SettingDeclarationStructOutput[][];
+    playerSettingsManifest: Vapor.SettingDeclarationStructOutput[];
     sendInitialSettings: any;
     startCallback: any;
   };
@@ -107,7 +107,7 @@ export interface VaporInterface extends utils.Interface {
     "getJoinableSessions()": FunctionFragment;
     "nextGameID()": FunctionFragment;
     "nextSessionID()": FunctionFragment;
-    "registerGame((uint256,string,address,(string,uint8,string[])[],(string,uint8,string[])[],(string,uint8,string[])[][],function,function))": FunctionFragment;
+    "registerGame((uint256,string,address,(string,uint8,string[])[],(string,uint8,string[])[],(string,uint8,string[])[],function,function))": FunctionFragment;
     "sessions(uint256)": FunctionFragment;
     "startSession(uint256,address[],bytes,bytes[])": FunctionFragment;
     "validateEnumValue(string[],string)": FunctionFragment;

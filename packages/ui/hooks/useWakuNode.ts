@@ -1,22 +1,24 @@
-import { WakuNode, DecodedSystemMessage } from "@vapor/p2p"
+import { WakuNode } from "@vapor/p2p"
 import { useEffect, useState } from "react"
 import * as p2p from "@vapor/p2p"
 import { useStore } from "@store/store"
 import { StoreActionTypes } from "@type/store"
 
 export function useWakuNode(
-  setStatus: (status: string) => void,
-  msgCallback: (msg: DecodedSystemMessage) => void
-): WakuNode | undefined {
+): { wakuNode: WakuNode | undefined, isWakuReady: boolean } {
   const { store, dispatch } = useStore()
+  const [isWakuReady, setIsWakuReady] = useState(false);
+
   useEffect(() => {
     const asyncSetupWaku = async () => {
-      const wakuNode = await p2p.setupWakuForSystem(setStatus, msgCallback)
-      dispatch({ type: StoreActionTypes.SET_WAKU_NODE, payload: { wakuNode }})
-      setStatus("Ready")
+      const wakuNode = await p2p.setupWakuForSystem()
+      dispatch({ type: StoreActionTypes.SET_WAKU_NODE, payload: { wakuNode } })
+      setIsWakuReady(true)
     }
-    void asyncSetupWaku()
+    if(!isWakuReady) {
+      void asyncSetupWaku()
+    }
   }, [])
 
-  return store.wakuNode
+  return { wakuNode: store.wakuNode, isWakuReady }
 }

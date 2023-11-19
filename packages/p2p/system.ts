@@ -80,7 +80,7 @@ type SystemMessageInputs = {
   settingsValues?: Uint8Array[]
   message?: string
   joiner?: Address
-  privateKey: `0x${string}`
+  signFn?: (payload: string) => Address
 }
 
 /**
@@ -166,10 +166,13 @@ export async function sendSystemMessage(node: WakuNode, inputs: SystemMessageInp
     payload = SettingsMessage.encode(settingsMessage).finish()
   }
 
-  const wallet = new Wallet(inputs.privateKey)
+  if(!inputs.signFn) {
+   throw new Error("signFn cannot be undefined.") 
+  }
+
   const systemMessage = SystemMessage.create({
     type: inputs.type,
-    signature: await wallet.signMessage(payload),
+    signature: await inputs.signFn(payload),
     payload: payload,
     sessionID: inputs.sessionID
   })
@@ -183,11 +186,8 @@ export async function sendSystemMessage(node: WakuNode, inputs: SystemMessageInp
  * Starts a Waku node and subscribe to system messages.
  */
 export async function setupWakuForSystem(
-  signalStatus: (status: string) => void,
-  msgCallback: (msg: DecodedSystemMessage) => void
 ): Promise<WakuNode> {
   const node = await startWakuNode()
-  signalStatus("Connecting to a peer")
 
   // Best effort method that waits for the Waku node to be connected to remote
   // waku nodes (peers) and for appropriate handshakes to be done.

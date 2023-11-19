@@ -7,17 +7,24 @@ import { GameSession } from "@type/common"
 import { Vapor } from "@vapor/sdk/contract_types"
 import { useRouter } from "next/router"
 import React, { useEffect, useState } from "react"
+import { abiDecodeSettingsBytes } from "@vapor/p2p/abi";
+import { useStore } from "@store/store"
 
 const Lobby: React.FC = () => {
   // get lobby IDs from getJoinableSessions function in the contract
   // feed lobby ID to 'lobby/[id]', and page will fetch it from url state and get further data
   // store all sessions data in redux?
-  const router = useRouter()
-  const { setModal } = useModal()
-  // const { isReady, vapor } = useVapor("");
+  const router = useRouter();
+  const { setModal } = useModal();
+  const { store } = useStore();
+  const { isReady, vapor } = useVapor("");
+  const { isWakuReady, wakuNode } = useWakuNode();
   const [lobbiesArray, setLobbiesArray] = useState<Vapor.SessionStructOutput[]>(
     []
-  )
+  );
+
+
+  const { account, provider } = store;
 
   // useEffect(() => {
   //   const asyncFn = async () => {
@@ -29,8 +36,15 @@ const Lobby: React.FC = () => {
   //   }
   // }, [isReady, vapor]);
 
+  useEffect(() => {
+  }, []);
+
   const onJoinClicked = (item: Vapor.SessionStructOutput) => async () => {
-    // const result = await vapor?.joinLobby(wakuNode, item.gameID, item.sessionID);
+
+    if (isWakuReady && wakuNode && vapor) {
+      // const settings = abiDecodeSettingsBytes(item.initialSettings);
+      // const result = await vapor.joinLobby(wakuNode, item.sessionID, Object.keys(settings), Object.values(settings), (payload) => { store.provider?.getSigner(payload) });
+    }
     // Set loading messages here
     router.push(`/lobby/${item.sessionID.toString()}`)
   }
