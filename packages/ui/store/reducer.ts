@@ -1,4 +1,5 @@
 import { StoreActions, StoreActionTypes, StoreState } from "@type/store"
+import { Reducer } from "react";
 
 export const initialState: StoreState = {
   provider: undefined,
@@ -9,7 +10,7 @@ export const initialState: StoreState = {
   vaporInstance: undefined,
 };
 
-const reducer = (state: StoreState, action: StoreActions) => {
+const reducer: Reducer<StoreState, StoreActions> = (state: StoreState, action: StoreActions) => {
   switch (action.type) {
     case StoreActionTypes.SET_ACCOUNT:
       return {
@@ -59,7 +60,7 @@ const reducer = (state: StoreState, action: StoreActions) => {
     case StoreActionTypes.SET_VAPOR_INSTANCE:
       return {
         ...state,
-        wakuNode: action.payload.vaporInstance,
+        vaporInstance: action.payload.vaporInstance,
       };
     default:
       return state
