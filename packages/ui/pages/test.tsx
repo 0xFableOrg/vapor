@@ -12,7 +12,7 @@ const TestPage: NextPage = () => {
 
   useEffect(() => {
     const asyncSetupWaku = async () => {
-      setWakuNode(await p2p.setupWaku(setStatus, (message) => {
+      setWakuNode(await p2p.setupWakuForSystem(setStatus, (message) => {
         setMessageList(messageList.concat(message.toString()))
       }))
       setStatus("Ready!")
@@ -25,6 +25,7 @@ const TestPage: NextPage = () => {
     if (!wakuNode || !inputRef.current) return
     await sendSystemMessage(wakuNode, {
       type: SystemMessageType.JoinGame,
+      sessionID: 1,
       settingsNames: ["test"],
       settingsValues: [utf8ToBytes("test")],
       privateKey: wallet.privateKey as Address
