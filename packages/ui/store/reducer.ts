@@ -6,7 +6,8 @@ export const initialState: StoreState = {
   balance: "0",
   wakuNode: undefined,
   rooms: [],
-}
+  vaporInstance: undefined,
+};
 
 const reducer = (state: StoreState, action: StoreActions) => {
   switch (action.type) {
@@ -55,6 +56,11 @@ const reducer = (state: StoreState, action: StoreActions) => {
           (room) => room.gameID !== action.payload.room.gameID
         ),
       }
+    case StoreActionTypes.SET_VAPOR_INSTANCE:
+      return {
+        ...state,
+        wakuNode: action.payload.vaporInstance,
+      };
     default:
       return state
   }
