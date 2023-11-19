@@ -1,5 +1,6 @@
 import { buildUrl } from "build-url-ts";
-import { post } from "./helper/api";
+import { get, post } from "./helper/api";
+import { ethers } from "ethers";
 
 // buildUrl('http://example.com', {
 //   path: 'about',
@@ -39,6 +40,35 @@ export type VerifyProofType = {
   created_at: string;
 };
 
+export type RootObject = {
+  pagination: Pagination;
+  ids: Id[];
+};
+
+export type Id = {
+  persona: string;
+  avatar: string;
+  alias: any[];
+  last_arweave_id: string;
+  activated_at: string;
+  proofs: Proof[];
+};
+export type Proof = {
+  platform: string;
+  identity: string;
+  alt_id: string;
+  created_at: string;
+  last_checked_at: string;
+  is_valid: boolean;
+  invalid_reason: string;
+};
+export type Pagination = {
+  total: number;
+  per: number;
+  current: number;
+  next: number;
+};
+
 export class NextDotId {
   baseUrl = "https://proof-service.next.id/v1";
 
@@ -54,15 +84,35 @@ export class NextDotId {
     payload: ProofPayloadType
   ): Promise<ProofPayloadResponse | null> {
     const url = buildUrl(this.baseUrl, {
-      path: "payload",
+      path: "proof/payload",
     });
 
-    const res = await post(url, payload);
-    if (!res.ok) {
+    const res = await post<ProofPayloadResponse>(url, payload);
+    if (res.status !== 200) {
       return null;
     }
 
-    const resJson = await res.json();
-    return resJson as ProofPayloadResponse;
+    return res.data;
+  }
+
+  async getTwitterProofs(identity: string) {
+    const url = buildUrl(this.baseUrl, {
+      path: "proof",
+      queryParams: {
+        platform: "twitter",
+        identity: identity,
+      },
+    });
+
+    console.log(`url: ${url}`);
+    const res = await get<RootObject>(url);
+    return res.data;
+  }
+
+  verifyPublicKey(publicKey: string, ethAddress: string): boolean {
+    const kRes = ethers.utils.keccak256(publicKey);
+    const derivedEthAddress = kRes.substr(kRes.length - 40);
+
+    return "0x" + derivedEthAddress.toLowerCase() === ethAddress.toLowerCase();
   }
 }
