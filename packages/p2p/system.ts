@@ -26,7 +26,8 @@ export enum SystemMessageType {
   LockGameSettings = 4,
   MarkPlayerReady = 5,
   LeaveRoom = 6,
-  ChatMessage = 7
+  ChatMessage = 7,
+  ConfirmJoin = 8
 }
 
 // =================================================================================================
@@ -46,8 +47,10 @@ const SystemMessage = new protobuf.Type("SystemMessage")
     leaveRoom: SystemMessageType.LeaveRoom,
     // payload: abi-encoded "leave" message
 
-    chatMessage: SystemMessageType.ChatMessage
+    chatMessage: SystemMessageType.ChatMessage,
     // payload: protobuf-encoded ChatMessage
+
+    confirmJoin: SystemMessageType.ConfirmJoin
   }))
   .add(new protobuf.Field("signature", 1, "string"))
   .add(new protobuf.Field("payload", 2, "bytes"))
@@ -68,12 +71,16 @@ const SettingsMessage = new protobuf.Type("ChangePlayerSettings")
 const ChatMessage = new protobuf.Type("ChatMessage")
   .add(new protobuf.Field("message", 1, "string"))
 
+const ConfirmJoin = new protobuf.Type("ConfirmJoin")
+  .add(new protobuf.Field("address", 1, "string"))
+
 // =================================================================================================
 
 /**
  * Inputs to send a system message.
  *
  * `message` is filled for chat messages.
+ * `joiner` is filled for confirmJoin messages.
  * `settingsNames` and `settingsValues` are filled for all other messages except leave.
  */
 type SystemMessageInputs = {
@@ -82,22 +89,25 @@ type SystemMessageInputs = {
   settingsNames?: string[]
   settingsValues?: Uint8Array[]
   message?: string
-  privateKey: Address
+  joiner?: Address
+  privateKey: `0x${string}`
 }
 
 /**
  * Decoded system message.
  *
  * `message` is filled for chat messages.
+ * `joiner` is filled for confirmJoin messages.
  * `settingsNames` and `settingsValues` are filled for all other messages except leave.
  */
 export type DecodedSystemMessage = {
   type: number
-  address: string
+  address: Address
   sessionID: number
   message?: string
   settingsNames?: string[]
   settingsValues?: Uint8Array[]
+  joiner?: Address
 }
 
 // =================================================================================================
@@ -112,26 +122,31 @@ export async function subscribeToSystem(node: WakuNode, msgCallback: (msg: Decod
     let settingsNames: string[] | undefined = undefined
     let settingsValues: Uint8Array[] | undefined = undefined
     let message: string | undefined = undefined
+    let joiner: Address | undefined = undefined
 
     if (systemMessage.type === SystemMessageType.ChatMessage) {
       const chatMessage: any = ChatMessage.decode(systemMessage.payload)
       message = chatMessage.message
     } else if (systemMessage.type === SystemMessageType.LeaveRoom) {
       // Nothing to do
+    } else if (systemMessage.type === SystemMessageType.ConfirmJoin) {
+      const confirmJoinMessage: any = ConfirmJoin.decode(systemMessage.payload)
+      joiner = confirmJoinMessage.address
     } else {
       const settingsMessage: any = SettingsMessage.decode(systemMessage.payload)
       settingsNames = settingsMessage.settingsNames
       settingsValues = settingsMessage.settingsValues
     }
 
-    const address = ethers.utils.verifyMessage(systemMessage.payload, systemMessage.signature)
+    const address = ethers.utils.verifyMessage(systemMessage.payload, systemMessage.signature) as Address
     const decodedMessage: DecodedSystemMessage = {
       type: systemMessage.type,
       sessionID: systemMessage.sessionID,
       address,
       message,
       settingsNames,
-      settingsValues
+      settingsValues,
+      joiner
     }
     msgCallback(decodedMessage)
   })
@@ -145,12 +160,13 @@ export async function subscribeToSystem(node: WakuNode, msgCallback: (msg: Decod
 export async function sendSystemMessage(node: WakuNode, inputs: SystemMessageInputs) {
   let payload: any
   if (inputs.type === SystemMessageType.ChatMessage) {
-    const chatMessage = ChatMessage.create({
-      message: inputs.message
-    })
+    const chatMessage = ChatMessage.create({ message: inputs.message })
     payload = ChatMessage.encode(chatMessage).finish()
   } else if (inputs.type === SystemMessageType.LeaveRoom) {
     payload = utf8ToBytes("leave")
+  } else if (inputs.type === SystemMessageType.ConfirmJoin) {
+    const confirmJoinMessage = ConfirmJoin.create({ address: inputs.joiner})
+    payload = ConfirmJoin.encode(confirmJoinMessage).finish()
   } else {
     const settingsMessage = SettingsMessage.create({
       settingsNames: inputs.settingsNames,
