@@ -31,3 +31,7 @@ export * from "./next_dot_id";
 // nextDotId.verifyProofOnTwitter(req).then((res) => {
 //   console.log(`result is ${res}`);
 // });
+
+// nextDotId
+//   .getTwitterProofs("cheechyuanang")
+//   .then((res) => console.log(`solution: ${JSON.stringify(res)}`));
