@@ -1,15 +1,31 @@
 import LobbyListActionButton from "../../components/Button/LobbyListActionButton";
 import LobbyItem from "@components/Lobby/LobbyItem";
 import { ModalEnum, useModal } from "@contexts/modal";
-import { useVapor } from "@hooks/useVapor";
 import { useWakuNode } from "@hooks/useWakuNode";
-import { Vapor } from "@vapor/sdk/contract_types";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { abiDecodeSettingsBytes } from "@vapor/p2p/abi";
 import { useStore } from "@store/store";
+import { SystemMessageType, sendSystemMessage, utf8ToBytes } from "@vapor/p2p";
+import {
+  useVaporCreateSession,
+  useVaporGetInitialSettingsManifest,
+  useVaporGetJoinableSessions,
+  useVaporNextGameId,
+  useVaporSessions,
+} from "@hooks/generated";
+import { useSignMessage } from "wagmi";
 import { deployment } from "@utils/deployment";
-import { utf8ToBytes } from "@vapor/p2p";
+
+type SessionData = {
+  gameID: bigint;
+  sessionID: bigint;
+  joinableIndex: bigint;
+  name: string;
+  creator: `0x${string}`;
+  status: number;
+  initialSettings: `0x${string}`;
+};
 
 const Lobby: React.FC = () => {
   // get lobby IDs from getJoinableSessions function in the contract
@@ -18,49 +34,57 @@ const Lobby: React.FC = () => {
   const router = useRouter();
   const { setModal } = useModal();
   const { store } = useStore();
-  const { isReady, vapor } = useVapor(deployment.Vapor, deployment.DemoGame);
+  const [sessionSelected, setSessionSelected] = useState<SessionData>();
+
+  const { data: vaporGameSessionsData, isSuccess: isGameSessionSuccess, isFetched } =
+    useVaporGetJoinableSessions({address: deployment.Vapor});
+  const { data: vaporGameConfigsData, isSuccess: isGameConfigSuccess } =
+    useVaporGetInitialSettingsManifest({
+      address: deployment.Vapor,
+      args: sessionSelected?.gameID ? [sessionSelected.gameID] : undefined,
+    });
+
+  console.log(vaporGameSessionsData)
+  console.log(isFetched)
+  console.log(vaporGameConfigsData)
+
   const { isWakuReady, wakuNode } = useWakuNode();
-  const [gamesArray, setGamesArray] = useState<Vapor.GameConfigStruct[]>([]);
-  const [lobbiesArray, setLobbiesArray] = useState<Vapor.SessionStructOutput[]>(
-    []
-  );
   const [isJoining, setIsJoining] = useState<boolean>(false);
 
+  const { signMessageAsync } = useSignMessage();
   const { account, provider } = store;
   useEffect(() => {
-    const asyncFn = async () => {
-      const gamesPromise = vapor!.listGames();
-      const lobbiesPromise = vapor!.listAllActiveLobbies();
-      const [games, lobbies] = await Promise.all([
-        gamesPromise,
-        lobbiesPromise,
-      ]);
+    const asyncFn = () => {};
 
-      setGamesArray(games);
-      setLobbiesArray(lobbies);
-    };
-    if (isReady && vapor) {
-      asyncFn();
+    if (isJoining) {
+      void asyncFn();
     }
-  }, [isReady, vapor]);
+  }, [sessionSelected, isJoining]);
 
-  const onJoinClicked = (item: Vapor.SessionStructOutput) => async () => {
-    if (isWakuReady && provider && wakuNode && vapor) {
+  const onJoinClicked = (item: SessionData) => async () => {
+    if (
+      isGameConfigSuccess &&
+      provider &&
+      isWakuReady &&
+      wakuNode &&
+      vaporGameConfigsData
+    ) {
       setIsJoining(true);
-      const gameInfo = gamesArray[item.gameID.toNumber()];
+      setSessionSelected(item);
       const settings = abiDecodeSettingsBytes(
-        gameInfo.initialSettingsManifest,
-        gameInfo.initialSettingsManifest.map((m) => m.name),
+        vaporGameConfigsData,
+        vaporGameConfigsData.map((m) => m.name),
         utf8ToBytes(item.initialSettings)
       );
-
-      await vapor.joinLobby(
-        wakuNode,
-        item.sessionID,
-        Object.keys(settings),
-        Object.values(settings),
-        (payload) => provider.getSigner(account).signMessage(payload)
-      );
+      await sendSystemMessage(wakuNode, {
+        type: SystemMessageType.JoinGame,
+        sessionID: Number(item.sessionID),
+        settingsNames: Object.keys(settings),
+        settingsValues: Object.values(settings),
+        signFn: async (payload) => {
+          return signMessageAsync({ message: payload });
+        },
+      });
       setIsJoining(false);
       // Set loading messages here
       router.push(`/lobby/${item.sessionID.toString()}`);
@@ -80,20 +104,21 @@ const Lobby: React.FC = () => {
           </span>
         </div>
         <div className="flex flex-col w-full max-w-7xl mx-auto items-start justify-start p-8 mt-4 border-[1px] border-white rounded-xl space-y-3 overflow-auto">
-          {lobbiesArray.map((item) => (
-            <LobbyItem
-              creator={item.creator}
-              currentSize={4}
-              maxSize={5}
-              gameId={item.gameID.toString()}
-              isJoinable={item.joinableIndex.toNumber() !== 0}
-              name={item.name}
-              sessionId={item.sessionID.toString()}
-              status={item.status}
-              key={item.sessionID.toString()}
-              onJoinClicked={onJoinClicked(item)}
-            />
-          ))}
+          {isGameSessionSuccess &&
+            vaporGameSessionsData!.map((item) => (
+              <LobbyItem
+                creator={item.creator}
+                currentSize={4}
+                maxSize={5}
+                gameId={item.gameID.toString()}
+                isJoinable={item.joinableIndex.toString() !== "0"}
+                name={item.name}
+                sessionId={item.sessionID.toString()}
+                status={item.status}
+                key={item.sessionID.toString()}
+                onJoinClicked={onJoinClicked(item)}
+              />
+            ))}
         </div>
       </main>
     </div>

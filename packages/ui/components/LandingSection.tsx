@@ -1,27 +1,31 @@
-import React, { useCallback } from "react"
-import { useRouter } from "next/router"
+import React, { useCallback } from "react";
+import { useRouter } from "next/router";
 
-import { useStore } from "@store/store"
-import { ModalEnum, useModal } from "@contexts/modal"
-import TypingText from "./Layout/TypingText"
+import { useStore } from "@store/store";
+import { ModalEnum, useModal } from "@contexts/modal";
+import TypingText from "./Layout/TypingText";
+import { useAccount, useConnect } from "wagmi";
+import {
+  useConnectModal,
+} from '@rainbow-me/rainbowkit';
 
 interface LandingSectionProps {} // eslint-disable-line
 
 const LandingSection: React.FC<LandingSectionProps> = () => {
-  const { store } = useStore()
-  const { setModal } = useModal()
 
-  const router = useRouter()
-  const { account } = store
+  const router = useRouter();
+  const { isConnected } = useAccount();
+  
+  const { openConnectModal } = useConnectModal();
 
   const handleEntryClick = useCallback(() => {
-    if (account) {
-      router.push("/lobby")
+    if (isConnected) {
+      router.push("/lobby");
     } else {
       // prompt user to connect
-      setModal(ModalEnum.WALLET_MODAL)
+      openConnectModal && openConnectModal();
     }
-  }, [router, account, setModal])
+  }, [router, isConnected, openConnectModal]);
 
   return (
     <div className="flex flex-col w-full h-[90vh] bg-black items-center justify-center space-y-10">
@@ -45,7 +49,7 @@ const LandingSection: React.FC<LandingSectionProps> = () => {
         enter
       </button>
     </div>
-  )
-}
+  );
+};
 
-export default LandingSection
+export default LandingSection;

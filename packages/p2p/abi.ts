@@ -2,7 +2,7 @@
  * Utilities to encode and decode ABI-coded values.
  */
 
-import { Dictionary, Manifest, ValueType } from "./types"
+import { Dictionary, ValueType } from "./types"
 import { ethers } from "ethers"
 
 // =================================================================================================
@@ -33,6 +33,8 @@ export function valueTypeToAbiType(valueType: ValueType): string {
 }
 
 // =================================================================================================
+
+type Manifest = readonly { name: string; valueType: number; allowedValues: readonly string[]; }[]
 
 /**
  * Maps a setting name to its type in a manifest. The returned value is a Solidity ABI type name
