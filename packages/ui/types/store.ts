@@ -1,4 +1,5 @@
-import { providers } from "ethers"
+import { providers } from 'ethers';
+import { WakuNode } from "@vapor/p2p"
 
 // eslint-disable-next-line
 type ActionMap<M extends { [index: string]: any }> = {
@@ -18,6 +19,7 @@ export enum StoreActionTypes {
   SET_BALANCE = "SET_BALANCE",
   SET_CHAIN_ID = "SET_CHAIN_ID",
   CLEAR_STATE = "CLEAR_STATE",
+  SET_WAKU_NODE = "SET_WAKU_NODE",
 }
 
 export interface StoreState {
@@ -25,6 +27,7 @@ export interface StoreState {
   account?: string
   balance?: string
   chainId?: number
+  wakuNode?: WakuNode
 }
 
 type StorePayload = {
@@ -39,6 +42,9 @@ type StorePayload = {
   }
   [StoreActionTypes.SET_CHAIN_ID]: {
     chainId: number
+  }
+  [StoreActionTypes.SET_WAKU_NODE]: {
+    wakuNode: WakuNode;
   }
   [StoreActionTypes.CLEAR_STATE]: undefined
 }

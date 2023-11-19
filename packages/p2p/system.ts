@@ -91,7 +91,7 @@ type SystemMessageInputs = {
  * `message` is filled for chat messages.
  * `settingsNames` and `settingsValues` are filled for all other messages except leave.
  */
-type DecodedSystemMessage = {
+export type DecodedSystemMessage = {
   type: number
   address: string
   sessionID: number
@@ -175,8 +175,10 @@ export async function sendSystemMessage(node: WakuNode, inputs: SystemMessageInp
 /**
  * Starts a Waku node and subscribe to system messages.
  */
-export async function setupWakuForSystem(signalStatus: (status: string) => void, msgCallback: (msg: DecodedSystemMessage) => void) {
-
+export async function setupWakuForSystem(
+  signalStatus: (status: string) => void,
+  msgCallback: (msg: DecodedSystemMessage) => void
+): Promise<WakuNode> {
   const node = await startWakuNode()
   await subscribeToSystem(node, msgCallback)
   signalStatus("Connecting to a peer")

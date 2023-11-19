@@ -4,6 +4,7 @@ export const initialState: StoreState = {
   provider: undefined,
   account: undefined,
   balance: '0',
+  wakuNode: undefined
 };
 
 const reducer = (state: StoreState, action: StoreActions) => {
@@ -25,6 +26,11 @@ const reducer = (state: StoreState, action: StoreActions) => {
       };
     case StoreActionTypes.CLEAR_STATE:
       return initialState;
+    case StoreActionTypes.SET_WAKU_NODE:
+      return {
+        ...state,
+        wakuNode: action.payload.wakuNode,
+      };
     default:
       return state;
   }

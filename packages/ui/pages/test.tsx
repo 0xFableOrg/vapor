@@ -1,24 +1,19 @@
-import React, { useEffect } from "react"
+import React from "react"
 import type { NextPage } from 'next'
-import * as p2p from '@vapor/p2p'
 import { Address, sendSystemMessage, SystemMessageType, utf8ToBytes, WakuNode } from "@vapor/p2p"
 import { ethers } from "ethers"
+import { useWakuNode } from "@hooks/useWakuNode"
 
 const TestPage: NextPage = () => {
-  const [wakuNode, setWakuNode] = React.useState<WakuNode|null>(null)
+
   const [status, setStatus] = React.useState("Starting")
   const inputRef = React.useRef<HTMLInputElement>(null)
   const [messageList, setMessageList] = React.useState<string[]>([])
 
-  useEffect(() => {
-    const asyncSetupWaku = async () => {
-      setWakuNode(await p2p.setupWakuForSystem(setStatus, (message) => {
-        setMessageList(messageList.concat(message.toString()))
-      }))
-      setStatus("Ready!")
+  const wakuNode = useWakuNode(setStatus, (message) => {
+      setMessageList(messageList.concat(message.toString()))
     }
-    void asyncSetupWaku()
-  }, [])
+  )
 
   const clickHandler = async () => {
     const wallet = ethers.Wallet.createRandom()
