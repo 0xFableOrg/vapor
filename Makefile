@@ -10,7 +10,7 @@ setup: install-frozen
 # Build contracts & frontend
 build:
 	cd packages/contracts && make build
-	cd packages/sdk && pnpm run generate:contract-type
+	# cd packages/sdk && pnpm run generate:contract-type
 	cd packages/ui && make build
 .PHONY: build
 
@@ -21,7 +21,7 @@ anvil:
 
 # Runs the webapp in dev mode.
 webdev:
-	cd packages/sdk && pnpm run generate:contract-type
+	# cd packages/sdk && pnpm run generate:contract-type
 	cd packages/ui && make dev
 .PHONY: webdev
 
