@@ -1,20 +1,20 @@
-import JoinLobbyActionButton from "@components/Button/JoinLobbyActionButton";
-import { GameStatus } from "@type/common";
-import Link from "next/link";
-import { MouseEventHandler } from "react";
-import GameStatusIndicator from "./GameStatusIndicator";
+import JoinLobbyActionButton from "@components/Button/JoinLobbyActionButton"
+import { GameStatus } from "@type/common"
+import Link from "next/link"
+import { MouseEventHandler } from "react"
+import GameStatusIndicator from "./GameStatusIndicator"
 
 export type LobbyItemProps = {
-  sessionId: string;
-  gameId: string;
-  name: string;
-  isJoinable: boolean;
-  creator: string;
-  status: GameStatus;
-  currentSize: number;
-  maxSize: number;
-  onJoinClicked: MouseEventHandler<HTMLButtonElement>;
-};
+  sessionId: string
+  gameId: string
+  name: string
+  isJoinable: boolean
+  creator: string
+  status: GameStatus
+  currentSize: number
+  maxSize: number
+  onJoinClicked: MouseEventHandler<HTMLButtonElement>
+}
 
 const LobbyItem: React.FC<LobbyItemProps> = ({
   name,
@@ -50,7 +50,7 @@ const LobbyItem: React.FC<LobbyItemProps> = ({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default LobbyItem;
+export default LobbyItem
