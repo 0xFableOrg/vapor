@@ -1,43 +1,15 @@
-import { BigNumber, BytesLike, Signer, ethers } from "ethers";
-import { DemoGame__factory, Vapor as VaporContract, DemoGame as DemoGameContract, Vapor__factory } from "./contract_types"
+import {getContract} from "viem";
 import { Address, SystemMessageType, WakuNode, sendSystemMessage, utf8ToBytes } from "@vapor/p2p"
 
-interface IVapor {
-  createNewGame(config: VaporContract.GameConfigStruct): Promise<BigNumber>;
-  createLobby(
-    gameId: BigNumber,
-    name: string,
-    initialSettings: BytesLike,
-    conditionalCallback: () => void // , listener callback
-  ): Promise<BigNumber>;
-  startGame(
-    sessionID: BigNumber,
-    players: string[],
-    startSettings: BytesLike,
-    playerSettings: BytesLike[],
-    startGameCallBack: () => void
-  ): Promise<void>;
-  endGame(sessionId: BigNumber): Promise<void>;
-  joinLobby(wakuNode: WakuNode, sessionId: BigNumber, settingsNames: string[], settingsValues: Uint8Array[], signFn: (payload: string) => string | Promise<string>): void;
-  listGames(
-  ): Promise<VaporContract.GameConfigStruct[]>;
-  listAllActiveLobbies(
-    gameId: BigNumber
-  ): Promise<VaporContract.SessionStructOutput[]>;
-}
-
-export class Vapor implements IVapor {
+export class Vapor {
   readonly VaporContract: VaporContract;
   readonly DemoGameContract: DemoGameContract;
   constructor(
-    private readonly vaporContract: string,
-    private readonly demoGameContract: string,
-    private readonly signer: Signer
+    private readonly vaporContractAddr: string,
+    private readonly demoGameContractAddr: string,
+    // private readonly signer: Signer
   ) {
-    this.VaporContract = Vapor__factory.connect(
-      this.vaporContract,
-      this.signer
-    );
+    this.VaporContract = getContract(vaporContractAddr, )
     this.DemoGameContract = DemoGame__factory.connect(
       this.demoGameContract,
       this.signer

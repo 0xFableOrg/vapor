@@ -5,18 +5,20 @@ import { useStore } from "@store/store"
 import { StoreActionTypes } from "@type/store"
 
 export function useWakuNode(
+  callback: (status: string) => void
 ): { wakuNode: WakuNode | undefined, isWakuReady: boolean } {
   const { store, dispatch } = useStore()
   const [isWakuReady, setIsWakuReady] = useState(false);
 
   useEffect(() => {
     const asyncSetupWaku = async () => {
-      const wakuNode = await p2p.setupWakuForSystem()
+      const wakuNode = await p2p.setupWakuForSystem(callback)
       dispatch({ type: StoreActionTypes.SET_WAKU_NODE, payload: { wakuNode } })
       setIsWakuReady(true)
     }
     if(!isWakuReady) {
       void asyncSetupWaku()
+
     }
   }, [])
 

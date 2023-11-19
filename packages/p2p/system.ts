@@ -186,13 +186,14 @@ export async function sendSystemMessage(node: WakuNode, inputs: SystemMessageInp
  * Starts a Waku node and subscribe to system messages.
  */
 export async function setupWakuForSystem(
+  callback: (status: string) => void
 ): Promise<WakuNode> {
   const node = await startWakuNode()
-
+  callback("Testing");
   // Best effort method that waits for the Waku node to be connected to remote
   // waku nodes (peers) and for appropriate handshakes to be done.
   await waitForRemotePeer(node)
-
+  callback("working?");
   // // For light node
   // await waitForRemotePeer(node, [
   //   Protocols.LightPush,

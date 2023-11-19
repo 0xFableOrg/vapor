@@ -32,51 +32,56 @@ const Lobby: React.FC = () => {
   const [sessionSelected, setSessionSelected] = useState<SessionData>();
 
   const { data: vaporGameSessionsData, isSuccess: isGameSessionSuccess } =
-    useVaporGetJoinableSessions({address: deployment.Vapor});
+    useVaporGetJoinableSessions({ address: deployment.Vapor });
   const { data: vaporGameConfigsData, isSuccess: isGameConfigSuccess } =
     useVaporGetInitialSettingsManifest({
       address: deployment.Vapor,
-      args: sessionSelected?.gameID ? [sessionSelected.gameID] : undefined,
+      args:[sessionSelected?.gameID] as any,
+      enabled: sessionSelected?.gameID !== undefined,
     });
 
-  const { isWakuReady, wakuNode } = useWakuNode();
+  const { isWakuReady, wakuNode } = useWakuNode((status) =>
+    console.log(status)
+  );
   const [isJoining, setIsJoining] = useState<boolean>(false);
 
   const { signMessageAsync } = useSignMessage();
+
   useEffect(() => {
-    const asyncFn = () => {};
+    const asyncFn = async () => {
+      console.log("effect")
+      console.log("isGameConfigSuccess", isGameConfigSuccess);
+      console.log("wakuNode", wakuNode);
+      console.log("sessionSelected", sessionSelected);
+      console.log("vaporGameConfigsData", vaporGameConfigsData);
+      if (isGameConfigSuccess && vaporGameConfigsData && sessionSelected && wakuNode) {
+        const settings = abiDecodeSettingsBytes(
+          vaporGameConfigsData,
+          vaporGameConfigsData.map((m) => m.name),
+          utf8ToBytes(sessionSelected.initialSettings)
+        );
+        sendSystemMessage(wakuNode, {
+          type: SystemMessageType.JoinGame,
+          sessionID: Number(sessionSelected.sessionID),
+          settingsNames: Object.keys(settings),
+          settingsValues: Object.values(settings),
+          signFn: async (payload) => {
+            return signMessageAsync({ message: payload });
+          },
+        });
+        setIsJoining(false);
+        // Set loading messages here
+        router.push(`/lobby/${sessionSelected.sessionID.toString()}`);
+      }
+    };
 
-    if (isJoining) {
-      void asyncFn();
-    }
-  }, [sessionSelected, isJoining]);
+    asyncFn();
+  }, [isGameConfigSuccess]);
 
-  const onJoinClicked = (item: SessionData) => async () => {
-    if (
-      isGameConfigSuccess &&
-      isWakuReady &&
-      wakuNode &&
-      vaporGameConfigsData
-    ) {
+  const onJoinClicked = (item: SessionData) => () => {
+    if (isWakuReady) {
       setIsJoining(true);
       setSessionSelected(item);
-      const settings = abiDecodeSettingsBytes(
-        vaporGameConfigsData,
-        vaporGameConfigsData.map((m) => m.name),
-        utf8ToBytes(item.initialSettings)
-      );
-      await sendSystemMessage(wakuNode, {
-        type: SystemMessageType.JoinGame,
-        sessionID: Number(item.sessionID),
-        settingsNames: Object.keys(settings),
-        settingsValues: Object.values(settings),
-        signFn: async (payload) => {
-          return signMessageAsync({ message: payload });
-        },
-      });
-      setIsJoining(false);
-      // Set loading messages here
-      router.push(`/lobby/${item.sessionID.toString()}`);
     }
   };
   return (
